@@ -53,37 +53,37 @@ if ($tipo == "listar_usuarios_ordenados_tabla") {
 }
 if ($tipo == "registrar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
-        //print_r($_POST);
-        //repuesta
         if ($_POST) {
             $dni = $_POST['dni'];
             $apellidos_nombres = $_POST['apellidos_nombres'];
             $correo = $_POST['correo'];
             $telefono = $_POST['telefono'];
+            $password = $_POST['password'];
 
-            if ($dni == "" || $apellidos_nombres == "" || $correo == "" || $telefono == "") {
-                //repuesta
+            if ($dni == "" || $apellidos_nombres == "" || $correo == "" || $telefono == "" || $password == "") {
                 $arr_Respuesta = array('status' => false, 'mensaje' => 'Error, campos vacíos');
             } else {
                 $arr_Usuario = $objUsuario->buscarUsuarioByDni($dni);
                 if ($arr_Usuario) {
-                    $arr_Respuesta = array('status' => false, 'mensaje' => 'Registro Fallido, Usuario ya se encuentra registrado');
+                    $arr_Respuesta = array('status' => false, 'mensaje' => 'Usuario ya registrado');
                 } else {
-                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono);
+                    $password_encriptada = password_hash($password, PASSWORD_DEFAULT);
+                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password_encriptada);
                     if ($id_usuario > 0) {
-                        // array con los id de los sistemas al que tendra el acceso con su rol registrado
-                        // caso de administrador y director
-                        $arr_Respuesta = array('status' => true, 'mensaje' => 'Registro Exitoso');
+                        $arr_Respuesta = array('status' => true, 'mensaje' => 'Registro exitoso');
                     } else {
-                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar producto');
+                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar usuario');
                     }
                 }
             }
         }
     }
+
     echo json_encode($arr_Respuesta);
 }
+
 
 if ($tipo == "actualizar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');

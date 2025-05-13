@@ -10,16 +10,18 @@ class UsuarioModel
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    public function registrarUsuario($dni, $apellidos_nombres,$correo, $telefono)
-    {
-        $sql = $this->conexion->query("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono) VALUES ('$dni','$apellidos_nombres','$correo','$telefono')");
-        if ($sql) {
-            $sql = $this->conexion->insert_id;
-        } else {
-            $sql = 0;
-        }
-        return $sql;
+    public function registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password)
+{
+    $stmt = $this->conexion->prepare("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono, password) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $dni, $apellidos_nombres, $correo, $telefono, $password);
+    
+    if ($stmt->execute()) {
+        return $this->conexion->insert_id;
+    } else {
+        return 0;
     }
+}
+
     public function actualizarUsuario($id, $dni, $nombres_apellidos, $correo, $telefono, $estado)
     {
         $sql = $this->conexion->query("UPDATE usuarios SET dni='$dni',nombres_apellidos='$nombres_apellidos',correo='$correo',telefono='$telefono',estado ='$estado' WHERE id='$id'");
@@ -38,11 +40,20 @@ class UsuarioModel
         return $sql;
     }
     public function buscarUsuarioByDni($dni)
-    {
-        $sql = $this->conexion->query("SELECT * FROM usuarios WHERE dni='$dni'");
-        $sql = $sql->fetch_object();
-        return $sql;
+{
+    $stmt = $this->conexion->prepare("SELECT * FROM usuarios WHERE dni = ?");
+    $stmt->bind_param("s", $dni);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($resultado->num_rows > 0) {
+        return $resultado->fetch_object(); // 👈 devuelve objeto
+    } else {
+        return null;
     }
+}
+
+    
     public function buscarUsuarioByNomAp($nomap)
     {
         $sql = $this->conexion->query("SELECT * FROM usuarios WHERE nombres_apellidos='$nomap'");
