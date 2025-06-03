@@ -157,6 +157,7 @@ if ($tipo == "sent_email_password") {
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
         $datos_sesion = $objSesion->buscarSesionLoginById($id_sesion);
         $datos_usuario = $objUsuario->buscarUsuarioById($datos_sesion->id_usuario);
+        $nombreusuario = $datos_usuario->nombres_apellidos;
         $llave = $objAdmin->generar_llave(30);
         $token = password_hash($llave, PASSWORD_DEFAULT);
         $update = $objUsuario->updateResetPassword($datos_sesion->id_usuario, $llave , 1);
@@ -198,92 +199,97 @@ try {
     $mail->CharSet = 'UTF-8';
     $mail->Subject = 'Cambio de contraseña - sistema de inventario';
     $mail->Body    = '
-    <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Correo Empresarial</title>
+  <title>Comunicado Educativo</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background-color: #ffffff;
     }
     .container {
       max-width: 600px;
       margin: auto;
       background-color: #ffffff;
       font-family: Arial, sans-serif;
-      color: #333333;
+      color: #000000;
       border: 1px solid #dddddd;
     }
     .header {
-      background-color: #004aad;
-      color: white;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
+      background: linear-gradient(90deg, #000000, #b8860b); /* Negro a dorado */
+      color: white;
+    }
+    .logo {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 10px;
     }
     .content {
-      padding: 30px;
+      padding: 30px 20px;
     }
     .content h1 {
-      font-size: 22px;
+      font-size: 20px;
       margin-bottom: 20px;
     }
     .content p {
-      font-size: 16px;
-      line-height: 1.5;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 15px;
     }
     .button {
       display: inline-block;
-      background-color: #004aad;
-      color: #ffffff !important;
-      padding: 12px 25px;
-      margin: 20px 0;
+      background-color: #000000;
+      color: #ffffff;
       text-decoration: none;
+      padding: 12px 20px;
       border-radius: 4px;
+      font-size: 14px;
+      margin-top: 20px;
     }
     .footer {
-      background-color: #eeeeee;
+      background: linear-gradient(90deg, #b8860b, #000000); /* Dorado a negro */
       text-align: center;
       padding: 15px;
       font-size: 12px;
-      color: #666666;
+      color: white;
     }
-    @media screen and (max-width: 600px) {
-      .content, .header, .footer {
-        padding: 15px !important;
-      }
-      .button {
-        padding: 10px 20px !important;
-      }
+    .footer a {
+      color: #ffd700;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h2>Nombre de tu empresa</h2>
+      <!-- LOGO -->
+      <img src="<?php echo BASE_URL; ?>img/logo.jpg"  class="logo">
+      <h2>ZonaFit - Ropa Deportiva Huanta</h2>
     </div>
     <div class="content">
-      <h1>Hola [Nombre del cliente],</h1>
+      <h1>Estimado ' .$nombreusuario.'</h1>
       <p>
-        Te saludamos cordialmente. Queremos informarte sobre nuestras últimas novedades y promociones exclusivas para ti.
+        Nos complace compartir con usted las últimas novedades y rutina progradas programadas para este mes.
       </p>
       <p>
-        ¡No te pierdas nuestras ofertas especiales por tiempo limitado!
+        Su compromiso es fundamental para seguir fortaleciendo su fisico y su salud. Le invitamos a revisar nuestro boletín informativo.
       </p>
-      <a href="https://www.tusitio.com/promocion" class="button">Ver más</a>
-      <p>Gracias por confiar en nosotros.</p>
+      <a href="https://www.tuinstitucion.edu.pe/boletin" class="button">Leer boletín</a>
     </div>
     <div class="footer">
-      © 2025 Nombre de tu empresa. Todos los derechos reservados.<br>
-      <a href="https://www.tusitio.com/desuscribirse">Cancelar suscripción</a>
+      © 2025 Nombre de la Institución Educativa. Todos los derechos reservados.<br>
+      <a href="https://www.tuinstitucion.edu.pe/desuscribirse">Cancelar suscripción</a>
     </div>
   </div>
 </body>
 </html>
+
+
     ';
 
     $mail->send();
