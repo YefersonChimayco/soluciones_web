@@ -22,6 +22,22 @@ $objAdmin = new AdminModel();
 $id_sesion = $_POST['sesion'];
 $token = $_POST['token'];
 
+
+if ($tipo == "validar_datos_reset_password") {
+    $id_email = $_POST['id'];
+    $token_email = $_POST['token'];
+    $arr_Respuesta = array('status' => false, 'msg' => 'link caducado');
+    $datos_usuario = $objUsuario->buscarUsuarioById($id_email);
+    if ($datos_usuario->token_password==1 && password_verify($datos_usuario->token_password,$token_email)) {
+    $arr_Respuesta = array('status' => true, 'msg' => 'ok');
+      
+    }
+    echo json_encode($arr_Respuesta);
+
+}
+
+
+
 if ($tipo == "listar_usuarios_ordenados_tabla") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
@@ -279,11 +295,11 @@ try {
       <p>
         Su compromiso es fundamental para seguir fortaleciendo su fisico y su salud. Le invitamos a revisar nuestro boletín informativo.
       </p>
-      <a href="https://www.tuinstitucion.edu.pe/boletin" class="button">Leer boletín</a>
-    </div>
+      <a href="'.BASE_URL.'reset-password?data='.$datos_usuario->id.'&data2='.$token.'"class="button">cambiar contraseña</a>
+    </div>    
     <div class="footer">
       © 2025 Nombre de la Institución Educativa. Todos los derechos reservados.<br>
-      <a href="https://www.tuinstitucion.edu.pe/desuscribirse">Cancelar suscripción</a>
+      <a href="https://www.tuinstitucion.edu.pe/desuscribirse">Cambiar contraseña</a>
     </div>
   </div>
 </body>
