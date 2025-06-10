@@ -13,7 +13,7 @@
       align-items: center;
       min-height: 100vh;
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #6e45e2, #88d3ce);
+      background: linear-gradient(135deg,rgb(226, 69, 69), #88d3ce);
       color: #fff;
     }
 
@@ -57,7 +57,7 @@
       width: 100%;
       padding: 10px;
       margin-top: 20px;
-      background: #6e45e2;
+      background:rgb(238, 110, 59);
       border: none;
       border-radius: 5px;
       color: #fff;
@@ -91,20 +91,24 @@
 </head>
 
 <body>
-    <input type="hidden" id="data" value='<?php echo $_GET['data']?>'>
-    <input type="hidden" id="data2" value='<?php echo $_GET['data2']?>'>
-  <div class="login-container">
+    <input type="hidden" id="data" value='<?php echo $_GET['data'];?>'>
+    <input type="hidden" id="data2" value='<?php echo urldecode($_GET['data2']);?>'>
+  <div class="login-container" id="logincontainer">
     <h1>recuperar contraseña </h1>
     <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%">
     <h4>Sistema de Control de Inventario</h4>
     <form id="frm_reset_password">
-      <input type="text" name="password" id="password" placeholder=" nueva Contraseña" required>
-      <input type="text" name="password" id="password" placeholder=" confirmar Contraseña" required>
-      <button type="submit">actualizar contraseña</button>
+      <input type="password" name="password" id="password" placeholder=" nueva Contraseña" required>
+      <input type="password" name="password" id="password1" placeholder=" confirmar Contraseña" required>
+      <button type="button" onclick="validar_imputs_password();" >actualizar contraseña</button>
     </form>
   </div>
 </body>
 <script src="<?php echo BASE_URL; ?>src/view/js/principal.js"></script>
+<script>
+validar_datos_reset_password();
+</script>
+
 <!-- Sweet Alerts Js-->
 <script src="<?php echo BASE_URL ?>src/view/pp/plugins/sweetalert2/sweetalert2.min.js"></script>
 
