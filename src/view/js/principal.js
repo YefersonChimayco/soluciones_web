@@ -613,7 +613,7 @@ async function actualizar_password() {
                 timerProgressBar: true
             });
             
-            // Redirigir al login después de 3 segundos
+            // Redirigir al login después de 2 segundos
             setTimeout(() => {
                 location.replace(base_url + "login");
             }, 2000);
