@@ -207,7 +207,13 @@ if ($tipo == "datos_registro") {
     echo json_encode($arr_Respuesta);
 }
 if ($tipo== "buscar_movimiento_id") {
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $id_movimiento = $_REQUEST['data'];
+        $arrMovimiento = $objMovimiento-> buscarMovimientoById($id_movimiento);
+        $arrAnbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento ->id_ambiente_origen);
+
+        // (tarea)-- aplicar los mismo array usuario de registro luego id ies  ambiente destino
         
         //repuesta
         //$arr_Instirucion = $objInstitucion->buscarInstitucionOrdenado();
@@ -215,4 +221,5 @@ if ($tipo== "buscar_movimiento_id") {
         //$arr_Respuesta['status'] = true;
         //$arr_Respuesta['msg'] = "Datos encontrados";
     }
+    echo json_encode($arrMovimiento); 
 }
