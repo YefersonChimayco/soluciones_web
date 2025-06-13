@@ -212,9 +212,12 @@ if ($tipo== "buscar_movimiento_id") {
         $id_movimiento = $_REQUEST['data'];
         $arrMovimiento = $objMovimiento-> buscarMovimientoById($id_movimiento);
         $arrAnbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento ->id_ambiente_origen);
+        $arrAnbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento ->id_ambiente_destino);
+        $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento ->id_usuario_registro);
+        $arrIes = $objInstitucion->buscarInstitucionById($arrMovimiento ->id_ies);
 
         // (tarea)-- aplicar los mismo array usuario de registro luego id ies  ambiente destino
-        
+
         //repuesta
         //$arr_Instirucion = $objInstitucion->buscarInstitucionOrdenado();
         //$arr_Respuesta['instituciones'] = $arr_Instirucion;
