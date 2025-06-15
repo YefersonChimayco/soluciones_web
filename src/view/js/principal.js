@@ -192,122 +192,359 @@ async function validar_datos_reset_password() {
             });
             let formulario = document.getElementById('logincontainer');
             formulario.innerHTML=`<style>
-                h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      margin: 0;
-      color: var(--color-accent);
-      line-height: 1.1;
-      user-select: text;
-    }   p {
-      font-size: 1.125rem;
-      line-height: 1.5;
-      margin: 0;
-      color: var(--color-text-secondary);
-      max-width: 380px;
-      user-select: text;
-    }
-    .characters {
-      display: flex;
-      gap: 2rem;
-      justify-content: center;
-      width: 100%;
-      max-width: 400px;
-      user-select: none;
-    }
-    .character-image {
-      width: 140px;
-      max-width: 100%;
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s var(--transition-timing);
-      cursor: default;
-      background: #fff;
-      object-fit: contain;
-    }
-    .character-image:hover,
-    .character-image:focus {
-      transform: scale(1.05) rotate(3deg);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
-      outline: none;
-    }
-      button {
-      background-color: var(--color-button-bg);
-      color: var(--color-button-text);
-      border: none;
-      border-radius: var(--border-radius);
-      padding: 0.85rem 2.25rem;
-      font-weight: 600;
-      font-size: 1.125rem;
-      cursor: pointer;
-      transition: background-color 0.25s var(--transition-timing), transform 0.2s var(--transition-timing);
-      box-shadow: 0 6px 15px rgba(239, 68, 68, 0.45);
-      user-select: none;
-    }
-    button:hover,
-    button:focus {
-      background-color: #dc2626;
-      outline: none;
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.7);
-    }
-    button:active {
-      transform: scale(0.95);
-      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.9);
-    }
-    @media (max-width: 520px) {
-      .card {
-        padding: 2rem 1.5rem 2.5rem;
-      }
-      h1 {
-        font-size: 2.25rem;
-      }
-      p {
-        max-width: 100%;
-        font-size: 1rem;
-      }
-      .characters {
-        gap: 1rem;
-      }
-      .character-image {
-        width: 110px;
-      }
-      button {
-        font-size: 1rem;
-        padding: 0.7rem 1.75rem;
-      }
-    }
-      </style>
+            :root {
+                --color-primary: #ff6b35;
+                --color-secondary: #ffa726;
+                --color-accent: #ff8f00;
+                --color-text-secondary: #4a4a4a;
+                --color-button-bg: #ef4444;
+                --color-button-text: #ffffff;
+                --border-radius: 16px;
+                --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+                --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffa726 50%, #ff8f00 100%);
+            }
 
-             <main class="card" role="main" aria-labelledby="error-title" aria-describedby="error-desc">
-    <h1 id="error-title">¡Oops! No pudimos recuperar tu contraseña</h1>
-    <p id="error-desc">Pero no te preocupes, <strong>Daffy Duck</strong> y <strong>Bugs Bunny</strong> están aquí para animarte.</p>
-    <section class="characters" aria-label="Imágenes de Daffy Duck y Bugs Bunny">
-      <!-- Daffy Duck image from Wikimedia Commons -->
-      <img
-        src="https://upload.wikimedia.org/wikipedia/en/9/99/Daffy_Duck.svg"
-        alt="Dibujo de Daffy Duck"
-        class="character-image"
-        width="140" height="140"
-        loading="lazy"
-        decoding="async"
-        tabindex="0"
-      />
-      <!-- Bugs Bunny image from Wikimedia Commons -->
-      <img
-        src="https://upload.wikimedia.org/wikipedia/en/0/0b/Bugs_Bunny.svg"
-        alt="Dibujo de Bugs Bunny"
-        class="character-image"
-        width="140" height="140"
-        loading="lazy"
-        decoding="async"
-        tabindex="0"
-      />
-    </section>
-    <button type="button" onclick="location.reload()" aria-label="Reintentar recuperación de contraseña">
-      Intentar de nuevo
-    </button>
-  </main>`;
+            .card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 24px;
+                padding: 3rem 2.5rem;
+                box-shadow: 0 25px 50px rgba(255, 107, 53, 0.3);
+                text-align: center;
+                max-width: 600px;
+                width: 100%;
+                position: relative;
+                overflow: hidden;
+                animation: slideUp 0.8s var(--transition-timing);
+                margin: 0 auto;
+            }
+
+            .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: var(--gradient-primary);
+                border-radius: 24px 24px 0 0;
+            }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            h1 {
+                font-size: 3rem;
+                font-weight: 800;
+                margin: 0 0 1.5rem 0;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1.1;
+                user-select: text;
+                animation: textGlow 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes textGlow {
+                from { filter: brightness(1); }
+                to { filter: brightness(1.1); }
+            }
+
+            p {
+                font-size: 1.25rem;
+                line-height: 1.6;
+                margin: 0 0 2.5rem 0;
+                color: var(--color-text-secondary);
+                max-width: 450px;
+                margin-left: auto;
+                margin-right: auto;
+                user-select: text;
+            }
+
+            p strong {
+                color: var(--color-accent);
+                font-weight: 700;
+            }
+
+            .icon-container {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 2rem;
+                position: relative;
+            }
+
+            .animated-icon {
+                width: 120px;
+                height: 120px;
+                background: linear-gradient(135deg, #ffb74d 0%, #ffa726 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+                animation: pulse 2s ease-in-out infinite;
+                position: relative;
+                font-size: 3.5rem;
+                color: white;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+
+            .animated-icon::after {
+                content: '';
+                position: absolute;
+                width: 140px;
+                height: 140px;
+                border: 3px solid rgba(255, 107, 53, 0.3);
+                border-radius: 50%;
+                animation: ripple 2s ease-out infinite;
+            }
+
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+
+            @keyframes ripple {
+                0% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1.3);
+                    opacity: 0;
+                }
+            }
+
+            .motivational-elements {
+                display: flex;
+                gap: 2rem;
+                justify-content: center;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto 2.5rem auto;
+                user-select: none;
+            }
+
+            .motivational-card {
+                flex: 1;
+                background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+                border-radius: var(--border-radius);
+                padding: 1.5rem;
+                box-shadow: 0 8px 24px rgba(255, 152, 0, 0.15);
+                transition: all 0.4s var(--transition-timing);
+                cursor: default;
+                border: 2px solid transparent;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .motivational-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                transition: left 0.8s;
+            }
+
+            .motivational-card:hover::before {
+                left: 100%;
+            }
+
+            .motivational-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(255, 152, 0, 0.25);
+                border-color: var(--color-accent);
+            }
+
+            .card-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+                display: block;
+                animation: bounce 2s ease-in-out infinite;
+            }
+
+            .card-text {
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: #e65100;
+                line-height: 1.4;
+            }
+
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+
+            button {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                color: var(--color-button-text);
+                border: none;
+                border-radius: var(--border-radius);
+                padding: 1rem 2.5rem;
+                font-weight: 700;
+                font-size: 1.125rem;
+                cursor: pointer;
+                transition: all 0.3s var(--transition-timing);
+                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+                user-select: none;
+                position: relative;
+                overflow: hidden;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            button:hover::before {
+                left: 100%;
+            }
+
+            button:hover,
+            button:focus {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                outline: none;
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: 0 15px 35px rgba(220, 38, 38, 0.5);
+            }
+
+            button:active {
+                transform: translateY(-1px) scale(0.98);
+                box-shadow: 0 8px 20px rgba(220, 38, 38, 0.7);
+            }
+
+            .additional-info {
+                margin-top: 2rem;
+                padding: 1.5rem;
+                background: rgba(255, 183, 77, 0.1);
+                border: 1px solid rgba(255, 183, 77, 0.3);
+                border-radius: var(--border-radius);
+                color: var(--color-text-secondary);
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+
+            .additional-info strong {
+                color: var(--color-accent);
+            }
+
+            /* Responsive */
+            @media (max-width: 520px) {
+                .card {
+                    padding: 2rem 1.5rem 2.5rem;
+                    margin: 0.5rem;
+                }
+                
+                h1 {
+                    font-size: 2.25rem;
+                }
+                
+                p {
+                    max-width: 100%;
+                    font-size: 1.1rem;
+                    margin-bottom: 2rem;
+                }
+                
+                .animated-icon {
+                    width: 100px;
+                    height: 100px;
+                    font-size: 2.5rem;
+                }
+                
+                .motivational-elements {
+                    gap: 1rem;
+                    margin-bottom: 2rem;
+                }
+                
+                .motivational-card {
+                    padding: 1rem;
+                }
+                
+                .card-icon {
+                    font-size: 2rem;
+                }
+                
+                .card-text {
+                    font-size: 0.85rem;
+                }
+                
+                button {
+                    font-size: 1rem;
+                    padding: 0.85rem 2rem;
+                }
+                
+                .additional-info {
+                    padding: 1rem;
+                    font-size: 0.9rem;
+                }
+            }
+
+            @media (max-width: 400px) {
+                h1 {
+                    font-size: 2rem;
+                }
+                
+                .motivational-elements {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                
+                .motivational-card {
+                    max-width: 250px;
+                }
+            }
+        </style>
+
+        <main class="card" role="main" aria-labelledby="error-title" aria-describedby="error-desc">
+            <div class="icon-container">
+                <div class="animated-icon" aria-hidden="true">💫</div>
+            </div>
+            
+            <h1 id="error-title">¡Oops! No pudimos recuperar tu contraseña</h1>
+            <p id="error-desc">Pero no te preocupes, todo tiene solución. <strong>¡Mantén una actitud positiva!</strong></p>
+            
+            <section class="motivational-elements" aria-label="Elementos motivacionales">
+                <div class="motivational-card" tabindex="0">
+                    <span class="card-icon">🌟</span>
+                    <div class="card-text">Los errores son oportunidades para aprender</div>
+                </div>
+                <div class="motivational-card" tabindex="0">
+                    <span class="card-icon">🚀</span>
+                    <div class="card-text">Cada reinicio es un nuevo comienzo</div>
+                </div>
+            </section>
+            
+            <button type="button" onclick="location.reload()" aria-label="Reintentar recuperación de contraseña">
+                🔄 Intentar de nuevo
+            </button>
+            
+            <div class="additional-info">
+                <strong>💡 Consejo:</strong> Los enlaces de recuperación de contraseña expiran por seguridad. Si necesitas ayuda adicional, contacta al administrador del sistema.
+            </div>
+        </main>
+   `;
         }
         //console.log(respuesta);
 

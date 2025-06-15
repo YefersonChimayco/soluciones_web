@@ -247,98 +247,210 @@ try {
     $mail->CharSet = 'UTF-8';
     $mail->Subject = 'Cambio de contraseña - sistema de inventario';
     $mail->Body    = '
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Comunicado Educativo</title>
+  <title>ZonaFit - Comunicado Importante</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #ffffff;
+      background-color: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
     }
+    
+    .email-wrapper {
+      width: 100%;
+      padding: 20px 0;
+      background-color: #f5f5f5;
+    }
+    
     .container {
       max-width: 600px;
-      margin: auto;
+      margin: 0 auto;
       background-color: #ffffff;
-      font-family: Arial, sans-serif;
-      color: #000000;
-      border: 1px solid #dddddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
+    
+    .top-bar {
+      height: 5px;
+      background: linear-gradient(90deg, #FF8F00, #FFA726, #FFB74D);
+    }
+    
     .header {
       text-align: center;
-      padding: 20px;
-      background: linear-gradient(90deg, #000000, #b8860b); /* Negro a dorado */
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #212121 0%, #424242 100%);
       color: white;
     }
+    
     .logo {
       max-width: 180px;
       height: auto;
-      margin-bottom: 10px;
-    }
-    .content {
-      padding: 30px 20px;
-    }
-    .content h1 {
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
-    .content p {
-      font-size: 15px;
-      line-height: 1.6;
       margin-bottom: 15px;
+      border-radius: 8px;
     }
+    
+    .header h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+      color: #FFA726;
+    }
+    
+    .content {
+      padding: 40px 30px;
+    }
+    
+    .greeting {
+      font-size: 22px;
+      font-weight: bold;
+      color: #212121;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #FFA726;
+    }
+    
+    .content p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #424242;
+      margin-bottom: 18px;
+    }
+    
+    .highlight-box {
+      background-color: #FFF8E1;
+      border-left: 4px solid #FF8F00;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 5px;
+    }
+    
+    .highlight-box p {
+      margin: 0;
+      font-style: italic;
+      color: #E65100;
+      font-weight: 500;
+    }
+    
     .button {
       display: inline-block;
-      background-color: #000000;
-      color: #ffffff;
+      background: linear-gradient(135deg, #FF8F00, #FFA726);
+      color: #ffffff !important;
       text-decoration: none;
-      padding: 12px 20px;
-      border-radius: 4px;
-      font-size: 14px;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
       margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(255, 143, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
+    
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #FFA726, transparent);
+      margin: 30px 0;
+    }
+    
     .footer {
-      background: linear-gradient(90deg, #b8860b, #000000); /* Dorado a negro */
+      background: linear-gradient(135deg, #212121, #424242);
       text-align: center;
-      padding: 15px;
-      font-size: 12px;
+      padding: 30px 20px;
       color: white;
     }
+    
+    .footer-bar {
+      height: 2px;
+      background: linear-gradient(90deg, #FF8F00, #FFA726, #FFB74D);
+      margin-bottom: 20px;
+    }
+    
+    .footer-content {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
     .footer a {
-      color: #ffd700;
+      color: #FFA726 !important;
       text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .social-links p {
+      margin: 10px 0 0 0;
+      color: #BDBDBD;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <!-- LOGO -->
-      <img src="<?php echo BASE_URL; ?>img/logo.jpg"  class="logo">
-      <h2>ZonaFit - Ropa Deportiva Huanta</h2>
-    </div>
-    <div class="content">
-      <h1>Estimado ' .$nombreusuario.'</h1>
-      <p>
-        Nos complace compartir con usted las últimas novedades y rutina progradas programadas para este mes.
-      </p>
-      <p>
-        Su compromiso es fundamental para seguir fortaleciendo su fisico y su salud. Le invitamos a revisar nuestro boletín informativo.
-      </p>
-      <a href="'.BASE_URL.'reset-password/?data='.$datos_usuario->id.'&data2='. urlencode($token).'"class="button">cambiar contraseña</a>
-    </div>    
-    <div class="footer">
-      © 2025 Nombre de la Institución Educativa. Todos los derechos reservados.<br>
-      <a href="https://www.tuinstitucion.edu.pe/desuscribirse">Cambiar contraseña</a>
+  <div class="email-wrapper">
+    <div class="container">
+      <div class="top-bar"></div>
+      
+      <div class="header">
+        <img src="<?php echo BASE_URL; ?>img/logo.jpg" alt="ZonaFit Logo" class="logo">
+        <h2>ZonaFit - Ropa Deportiva Huanta</h2>
+      </div>
+      
+      <div class="content">
+        <h1 class="greeting">Estimado ' .$nombreusuario.'</h1>
+        
+        <p>
+          Nos complace contactarte para informarte sobre una actualización importante en tu cuenta de ZonaFit. 
+          Tu seguridad y experiencia son nuestra prioridad.
+        </p>
+        
+        <div class="highlight-box">
+          <p>
+            Como parte de nuestro compromiso con la seguridad, te recomendamos actualizar tu contraseña 
+            regularmente para mantener tu cuenta protegida.
+          </p>
+        </div>
+        
+        <p>
+          En ZonaFit seguimos comprometidos con brindarte la mejor experiencia en ropa deportiva y fitness. 
+          Tu confianza es fundamental para seguir creciendo juntos.
+        </p>
+        
+        <p>
+          Haz clic en el botón de abajo para cambiar tu contraseña de forma segura:
+        </p>
+        
+        <a href="'.BASE_URL.'reset-password/?data='.$datos_usuario->id.'&data2='. urlencode($token).'" class="button">Cambiar Contraseña</a>
+        
+        <div class="divider"></div>
+        
+        <p style="font-size: 14px; color: #757575;">
+          Si no solicitaste este cambio, puedes ignorar este mensaje. Tu cuenta permanece segura.
+        </p>
+      </div>
+      
+      <div class="footer">
+        <div class="footer-bar"></div>
+        <div class="footer-content">
+          <strong>© 2025 ZonaFit - Ropa Deportiva Huanta</strong><br>
+          Todos los derechos reservados.
+        </div>
+        
+        <div class="social-links">
+          <p>
+            ¿Necesitas ayuda? <a href="'.BASE_URL.'contacto">Contáctanos</a> | 
+            <a href="'.BASE_URL.'politicas">Políticas de Privacidad</a>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </body>
 </html>
-
-
-    ';
+';
 
     $mail->send();
     echo 'Message has been sent';

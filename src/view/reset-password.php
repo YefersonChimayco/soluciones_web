@@ -63,7 +63,7 @@
       color: #fff;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition:background 0.3s ease;
     }
 
     .login-container button:hover {
