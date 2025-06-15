@@ -107,6 +107,7 @@
 <script src="<?php echo BASE_URL; ?>src/view/js/principal.js"></script>
 <script>
 validar_datos_reset_password();
+
 </script>
 
 <!-- Sweet Alerts Js-->
