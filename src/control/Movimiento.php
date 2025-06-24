@@ -215,15 +215,24 @@ if ($tipo== "buscar_movimiento_id") {
         $arrAmbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_destino);
         $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento->id_usuario_registro);
         $arrIes= $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
+        $arrDetalle = $objMovimiento->buscarDetalle_MovimientoByMovimiento($id_movimiento);
+        $array_bienes = array();
+        foreach ($arrDetalle as $bien ) {
+            $id_bien = $bien->id_biente;
+            $res_bien = $objBien->buscarBienById($id_bien);
+//tarea agregar $res_bien a $array_bienes y este aray le envies dentro
+            
+        }
         $arr_Respuesta['movimiento'] = $arrMovimiento;
         $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
         $arr_Respuesta['amb_destino'] = $arrAmbDestino;
         $arr_Respuesta['datos_usuario'] = $arrUsuario;
         $arr_Respuesta['datos_ies'] = $arrIes;
+        $arr_Respuesta['datalle'] = $arrDetalle;
         $arr_Respuesta['status'] = true;
         $arr_Respuesta['msg'] = 'correcto';
 
-
+//tarea 
         // (tarea)-- aplicar los mismo array usuario de registro luego id ies  ambiente destino
 
         //repuesta
