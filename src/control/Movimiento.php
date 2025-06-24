@@ -210,11 +210,19 @@ if ($tipo== "buscar_movimiento_id") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
         $id_movimiento = $_REQUEST['data'];
-        $arrMovimiento = $objMovimiento-> buscarMovimientoById($id_movimiento);
-        $arrAnbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento ->id_ambiente_origen);
-        $arrAnbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento ->id_ambiente_destino);
-        $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento ->id_usuario_registro);
-        $arrIes = $objInstitucion->buscarInstitucionById($arrMovimiento ->id_ies);
+        $arrMovimiento = $objMovimiento->buscarMovimientoById($id_movimiento);
+        $arrAmbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_origen);
+        $arrAmbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_destino);
+        $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento->id_usuario_registro);
+        $arrIes= $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
+        $arr_Respuesta['movimiento'] = $arrMovimiento;
+        $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
+        $arr_Respuesta['amb_destino'] = $arrAmbDestino;
+        $arr_Respuesta['datos_usuario'] = $arrUsuario;
+        $arr_Respuesta['datos_ies'] = $arrIes;
+        $arr_Respuesta['status'] = true;
+        $arr_Respuesta['msg'] = 'correcto';
+
 
         // (tarea)-- aplicar los mismo array usuario de registro luego id ies  ambiente destino
 
@@ -224,5 +232,5 @@ if ($tipo== "buscar_movimiento_id") {
         //$arr_Respuesta['status'] = true;
         //$arr_Respuesta['msg'] = "Datos encontrados";
     }
-    echo json_encode($arrMovimiento); 
+    echo json_encode($arr_Respuesta); 
 }
