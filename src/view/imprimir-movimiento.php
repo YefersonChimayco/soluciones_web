@@ -173,3 +173,5 @@ $pdf->AddPage();
 $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 $pdf->Output('reporte_movimiento.pdf', 'I');
 ?>
+
+<!-- hacer el header y el footer del pdf
