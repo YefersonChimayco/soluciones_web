@@ -32,98 +32,96 @@ if ($err) {
 
 $respuesta = json_decode($response);
 
+// Incluir TCPDF y crear clase extendida
+require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+
+class MYPDF extends TCPDF {
+    public function Header() {
+        // Logo (ajusta la ruta y tamaño según tu archivo)
+        $logoPath = K_PATH_IMAGES . 'logo.png';
+        if (file_exists($logoPath)) {
+            $this->Image($logoPath, 15, 8, 20); // (x, y, width)
+        }
+
+        // Texto del encabezado
+        $this->SetFont('helvetica', 'B', 12);
+        $this->Cell(0, 5, 'DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO', 0, 1, 'C');
+        $this->SetFont('helvetica', '', 10);
+        $this->Cell(0, 5, 'Oficina de Administración', 0, 1, 'C');
+        $this->Cell(0, 5, 'Papeleta de Rotación de Bienes', 0, 1, 'C');
+        $this->Ln(5);
+    }
+
+    public function Footer() {
+        $this->SetY(-20);
+        $this->SetFont('helvetica', 'I', 8);
+        $this->Cell(0, 5, 'Página ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages(), 0, 1, 'C');
+        $this->Cell(0, 5, 'DRE Ayacucho - Generado el ' . date('d/m/Y H:i:s'), 0, 0, 'C');
+    }
+}
+
+// Crear contenido HTML del cuerpo del PDF
 $contenido_pdf = '
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Papeleta de Rotación de Bienes</title>
-  <style>
-    body {
-      background-color: white;
-      color: #1e1e1e;
-      font-family: Arial, sans-serif;
-      padding: 30px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .datos {
-      margin-bottom: 20px;
-    }
-    .datos p {
-      margin: 5px 0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-    }
-    th, td {
-      border: 1px solid #1e1e1e;
-      padding: 8px;
-      text-align: center;
-    }
-    .firmas {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 50px;
-    }
-    .firmas div {
-      text-align: center;
-      width: 45%;
-    }
-    .ubicacion {
-      text-align: right;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+  }
+  .datos p {
+    margin: 5px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 6px;
+    text-align: center;
+  }
+</style>
 
-  <h2>PAPELETA DE ROTACIÓN DE BIENES</h2>
+<div class="datos">
+  <p><strong>ENTIDAD:</strong> DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO</p>
+  <p><strong>ÁREA:</strong> OFICINA DE ADMINISTRACIÓN</p>
+  <p><strong>ORIGEN:</strong> ' . $respuesta->amb_origen->codigo . ' - ' . $respuesta->amb_origen->detalle . '</p>
+  <p><strong>DESTINO:</strong> ' . $respuesta->amb_destino->codigo . ' - ' . $respuesta->amb_destino->detalle . '</p>
+  <p><strong>MOTIVO (*):</strong> ' . $respuesta->movimiento->descripcion . '</p>
+</div>
 
-  <div class="datos">
-    <p><strong>ENTIDAD:</strong> DIRECCION REGIONAL DE EDUCACION - AYACUCHO</p>
-    <p><strong>AREA:</strong> OFICINA DE ADMINISTRACIÓN</p>
-    <p><strong>ORIGEN:</strong> ' . $respuesta->amb_origen->codigo . ' - ' . $respuesta->amb_origen->detalle . '</p>
-    <p><strong>DESTINO:</strong> ' . $respuesta->amb_destino->codigo . ' - ' . $respuesta->amb_destino->detalle . '</p>
-    <p><strong>MOTIVO (*):</strong> ' . $respuesta->movimiento->descripcion . '</p>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>ITEM</th>
-        <th>CÓDIGO PATRIMONIAL</th>
-        <th>NOMBRE DEL BIEN</th>
-        <th>MARCA</th>
-        <th>COLOR</th>
-        <th>MODELO</th>
-        <th>ESTADO</th>
-      </tr>
-    </thead>
-    <tbody>';
+<table>
+  <thead>
+    <tr>
+      <th>ITEM</th>
+      <th>CÓDIGO PATRIMONIAL</th>
+      <th>NOMBRE DEL BIEN</th>
+      <th>MARCA</th>
+      <th>COLOR</th>
+      <th>MODELO</th>
+      <th>ESTADO</th>
+    </tr>
+  </thead>
+  <tbody>';
 
 $contador = 1;
 foreach ($respuesta->detalle as $bien) {
     $contenido_pdf .= "<tr>";
-    $contenido_pdf .= "<td>" . $contador . "</td>";
-    $contenido_pdf .= "<td>" . $bien->cod_patrimonial . "</td>";
-    $contenido_pdf .= "<td>" . $bien->denominacion . "</td>";
-    $contenido_pdf .= "<td>" . $bien->marca . "</td>";
-    $contenido_pdf .= "<td>" . $bien->color . "</td>";
-    $contenido_pdf .= "<td>" . $bien->modelo . "</td>";
-    $contenido_pdf .= "<td>" . $bien->estado . "</td>";
+    $contenido_pdf .= "<td>{$contador}</td>";
+    $contenido_pdf .= "<td>{$bien->cod_patrimonial}</td>";
+    $contenido_pdf .= "<td>{$bien->denominacion}</td>";
+    $contenido_pdf .= "<td>{$bien->marca}</td>";
+    $contenido_pdf .= "<td>{$bien->color}</td>";
+    $contenido_pdf .= "<td>{$bien->modelo}</td>";
+    $contenido_pdf .= "<td>{$bien->estado}</td>";
     $contenido_pdf .= "</tr>";
     $contador++;
 }
 
 $contenido_pdf .= '</tbody>
-  </table>';
+</table>';
 
-// Fecha del movimiento en español
+// Fecha en español
 $fechaMovimiento = new DateTime($respuesta->movimiento->fecha_registro);
 $meses = [
     1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -135,43 +133,30 @@ $anio = $fechaMovimiento->format('Y');
 
 $contenido_pdf .= "
 <br><br>
+<p style='text-align: center;'>Ayacucho, $dia de $mes del $anio</p>
+
+<br><br>
+
 <div style='text-align: center;'>
-  <p>Ayacucho, $dia de $mes del $anio</p>
-</div>
-
-<br><br><br>
-
-<div style='width: 100%; text-align: center;'>
   <div style='display: inline-block; margin-right: 100px;'>
     <p>------------------------------</p>
     <p>ENTREGUÉ CONFORME</p>
   </div>
-
   <div style='display: inline-block;'>
     <p>------------------------------</p>
     <p>RECIBÍ CONFORME</p>
   </div>
 </div>
-
-</body>
-</html>
 ";
 
-
-
-// Generar el PDF con TCPDF
-require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
-$pdf = new TCPDF();
+// Crear el PDF
+$pdf = new MYPDF();
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('yepeto');
-$pdf->SetTitle('Reporte de movimientos');
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetAuthor('DRE Ayacucho');
+$pdf->SetTitle('Papeleta de Rotación de Bienes');
+$pdf->SetMargins(15, 35, 15); // márgenes: izquierda, arriba, derecha
+$pdf->SetAutoPageBreak(TRUE, 25); // margen inferior
 $pdf->AddPage();
-
 $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 $pdf->Output('reporte_movimiento.pdf', 'I');
 ?>
-
-<!-- hacer el header y el footer del pdf
