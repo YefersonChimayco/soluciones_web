@@ -37,28 +37,53 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
 class MYPDF extends TCPDF {
     public function Header() {
-        // Logo (ajusta la ruta y tamaño según tu archivo)
-        $logoPath = K_PATH_IMAGES . 'logo.png';
-        if (file_exists($logoPath)) {
-            $this->Image($logoPath, 15, 8, 20); // (x, y, width)
-        }
+    // === Configuración de imágenes ===
+    $imgIzquierda = __DIR__ . '/../../img/crea.jpg';
+    $imgDerecha   = __DIR__ . '/../../img/room.png';
+    $anchoImg     = 20;
+    $alturaImg    = 20;
 
-        // Texto del encabezado
-        $this->SetFont('helvetica', 'B', 12);
-        $this->Cell(0, 5, 'DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO', 0, 1, 'C');
-        $this->SetFont('helvetica', '', 10);
-        $this->Cell(0, 5, 'Oficina de Administración', 0, 1, 'C');
-        $this->Cell(0, 5, 'Papeleta de Rotación de Bienes', 0, 1, 'C');
-        $this->Ln(5);
+    // Posiciones Y (vertical) e X (horizontal)
+    $posY = 8;
+    $posXIzquierda = 15;
+    $posXDerecha   = $this->getPageWidth() - $anchoImg - 15;
+
+    // Mostrar logo izquierdo
+    if (file_exists($imgIzquierda)) {
+        $this->Image($imgIzquierda, $posXIzquierda, $posY, $anchoImg, $alturaImg);
     }
 
-    public function Footer() {
-        $this->SetY(-20);
-        $this->SetFont('helvetica', 'I', 8);
-        $this->Cell(0, 5, 'Página ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages(), 0, 1, 'C');
-        $this->Cell(0, 5, 'DRE Ayacucho - Generado el ' . date('d/m/Y H:i:s'), 0, 0, 'C');
+    // Mostrar logo derecho
+    if (file_exists($imgDerecha)) {
+        $this->Image($imgDerecha, $posXDerecha, $posY, $anchoImg, $alturaImg);
     }
+
+    // === Texto centrado ===
+    $this->SetY(10); // Posición vertical para texto
+    $this->SetFont('helvetica', 'B', 12);
+    $this->Cell(0, 5, 'DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO', 0, 1, 'C');
+
+    $this->SetFont('helvetica', '', 10);
+    $this->Cell(0, 5, 'Oficina de Administración', 0, 1, 'C');
+
+    $this->Ln(5); // Espacio después del encabezado
 }
+
+public function Footer() {
+    $this->SetY(-20); // 20mm desde la parte inferior
+    $this->SetFont('helvetica', 'I', 8);
+
+    // Número de página centrado
+    $pagina = 'Página ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages();
+    $this->Cell(0, 5, $pagina, 0, 1, 'C');
+
+    // Texto con lugar y fecha
+    $fecha = 'Huanta - Generado el ' . date('d/m/Y');
+    $this->Cell(0, 5, $fecha, 0, 0, 'C');
+}
+
+}
+
 
 // Crear contenido HTML del cuerpo del PDF
 $contenido_pdf = '
@@ -80,7 +105,12 @@ $contenido_pdf = '
     padding: 6px;
     text-align: center;
   }
+    .p{
+    text-align: center; font-weight: bold;
+
+    }
 </style>
+<p class="p"> PAPELETA DE ROTACIÓN DE BIENES</p>
 
 <div class="datos">
   <p><strong>ENTIDAD:</strong> DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO</p>
@@ -130,24 +160,18 @@ $meses = [
 $dia = $fechaMovimiento->format('d');
 $mes = $meses[(int)$fechaMovimiento->format('m')];
 $anio = $fechaMovimiento->format('Y');
-
 $contenido_pdf .= "
 <br><br>
-<p style='text-align: center;'>Ayacucho, $dia de $mes del $anio</p>
+<div align='right'>Ayacucho, $dia de $mes del $anio</div>
 
-<br><br>
+<br><br><br><br><br>
 
-<div style='text-align: center;'>
-  <div style='display: inline-block; margin-right: 100px;'>
-    <p>------------------------------</p>
-    <p>ENTREGUÉ CONFORME</p>
-  </div>
-  <div style='display: inline-block;'>
-    <p>------------------------------</p>
-    <p>RECIBÍ CONFORME</p>
-  </div>
-</div>
+<p style='text-align: center;'>------------------------------                                                                ------------------------------</p>
+<p style='text-align: center;'>ENTREGUÉ CONFORME                                                           RECIBÍ CONFORME</p>
 ";
+
+
+
 
 // Crear el PDF
 $pdf = new MYPDF();
