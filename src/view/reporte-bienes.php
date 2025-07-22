@@ -6,43 +6,17 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $spreadsheet = new Spreadsheet();
-$spreadsheet->getProperties()->setCreator("")->setLastModifiedBy("yo")->setTitle("yo")->setDescription("yo");
+$spreadsheet->getProperties()->setCreator("")->setLastModifiedBy("")->setTitle("")->setDescription("");
 $activeWorksheet = $spreadsheet->getActiveSheet();
-$activeWorksheet->setTitle("hoja1");
-$activeWorksheet->setCellValue('A1', 'Hola Mundo !');
-$activeWorksheet->setCellValue('A2', 'DNI');
-$activeWorksheet->setCellValue('B2', '77654567');
-$activeWorksheet->setCellValue('A3', 'nombre');
-$activeWorksheet->setCellValue('B3', 'Chimayco');
-
-/*header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="hello_world.xlsx"');
-header('Cache-Control: max-age=0');*/
-
-/*for ($i =1; $i <= 10; $i++) { 
-    $activeWorksheet->setCellValue('A1'. $i, $i);
-}
-
-for ($i = 1; $i <= 30; $i++) {
-    $columna = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i); // A, B, C...
-    $activeWorksheet->setCellValue($columna . '4', $i);
-}*/
 
 
-/*for ($i = 1; $i <= 12; $i++) {
-    $fila = $i;
-    $activeWorksheet->setCellValue('A' . $fila, 1);          // Primer número
-    $activeWorksheet->setCellValue('B' . $fila, 'x');        // Operador
-    $activeWorksheet->setCellValue('C' . $fila, $i);         // Segundo número
-    $activeWorksheet->setCellValue('D' . $fila, '=');        // Signo igual
-    $activeWorksheet->setCellValue('E' . $fila, 1 * $i);      // Resultado
-}*/
+
 
 $curl = curl_init(); //inicia la sesión cURL
     curl_setopt_array($curl, array(
         CURLOPT_URL => BASE_URL_SERVER."src/control/Bien.php?tipo=listarBienes&sesion=".$_SESSION['sesion_id']."&token=".$_SESSION['sesion_token'], //url a la que se conecta
-        CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena del tipo curl_exec
-        CURLOPT_FOLLOWLOCATION => true, //sigue el encabezado que le envíe el servidor
+        CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena
+        CURLOPT_FOLLOWLOCATION => true, 
         CURLOPT_ENCODING => "", // permite decodificar la respuesta y puede ser"identity", "deflate", y "gzip", si está vacío recibe todos los disponibles.
         CURLOPT_MAXREDIRS => 10, // Si usamos CURLOPT_FOLLOWLOCATION le dice el máximo de encabezados a seguir
         CURLOPT_TIMEOUT => 30, // Tiempo máximo para ejecutar
@@ -71,7 +45,7 @@ $writer->save('tabla_del_1.xlsx');
 
        // Crear el Excel
             $spreadsheet = new Spreadsheet();
-            $spreadsheet->getProperties()->setCreator("Jasmina")->setLastModifiedBy("yo")->setTitle("ReporteBienes")->setDescription("yo");
+            $spreadsheet->getProperties()->setCreator("Chimayco")->setLastModifiedBy("")->setTitle("Reporte-Bienes")->setDescription("");
             $activeWorkSheet = $spreadsheet->getActiveSheet();
             $activeWorkSheet->setTitle("Bienes");  
 
@@ -86,9 +60,9 @@ $writer->save('tabla_del_1.xlsx');
             $activeWorkSheet->getStyle('A1:R1')->applyFromArray($styleArray);
             
             $headers = [
-                'ID', 'Id ingreso bienes', 'id ambiente', 'cod patrimonial', 'denominacion', 'marca', 'Modelo', 'tipo', 'Color',
-                'serie', 'dimensiones', 'valor', 'situacion', 'estado conservacion', 'observaciones',
-                'fecha registro', 'usuario registro', 'estado'
+                'ID', 'Id INGRESO BIENES', 'ID AMBIENTE', 'COD_PATRIMONIAL', 'DENOMINACION', 'MARCA', 'MOMDELO', 'TIPO', 'COLOR',
+                'SERIE', 'DIMENSIONES', 'VALOR', 'SITUACION', 'ESTADO_CONSERVACION', 'OBSERVACIONES',
+                'FECHA_REGISTRO', 'USUARIO_REGISTRO', 'ESTADO'
              ];
 
             // Asignar cabeceras en la fila 1

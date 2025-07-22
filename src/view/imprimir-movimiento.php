@@ -38,8 +38,8 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 class MYPDF extends TCPDF {
     public function Header() {
     // === Configuración de imágenes ===
-    $imgIzquierda = __DIR__ . '/../../img/crea.jpg';
-    $imgDerecha   = __DIR__ . '/../../img/room.png';
+      $imgIzquierda = __DIR__ . '/../../img/crea.jpg';
+      $imgDerecha   = __DIR__ . '/../../img/room.png';
     $anchoImg     = 20;
     $alturaImg    = 20;
 
