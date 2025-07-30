@@ -63,49 +63,50 @@ $pdf->AddPage('L'); // Horizontal
 $html = "<h2 style='text-align:center;font-size:13pt;'>REPORTE GENERAL DE MOVIMIENTOS DE BIENES</h2>";
 $html .= "<p style='text-align:right;font-size:9pt;'>Ayacucho, $dia de $mes del $anio</p>";
 
-// ESTILOS MODERNOS
+// ESTILOS + TABLA
 $html .= '
 <style>
-th {
-    background-color: #e6f0fa;
-    font-weight: bold;
-    border: 1px solid #ccc;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 7pt;
-    padding: 3px;
-}
-td {
-    border: 1px solid #ddd;
-    font-size: 7pt;
-    padding: 3px;
-    vertical-align: middle;
-    text-align: center;
-}
-td.left {
-    text-align: left;
-}
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 8pt;
+    }
+    th, td {
+        border: 1px solid #000;
+        padding: 3px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    th {
+        background-color: #e6f0fa;
+        font-weight: bold;
+    }
+    td.left {
+        text-align: left;
+    }
 </style>
 
 <table cellspacing="0" cellpadding="2">
-    <thead>
-        <tr>
-            <th width="3%">#</th>
-            <th width="10%">Fecha</th>
-            <th width="12%">Origen</th>
-            <th width="12%">Destino</th>
-            <th width="12%">Responsable</th>
-            <th width="14%">Descripción</th>
-            <th width="10%">Cod. Patrimonial</th>
-            <th width="15%">Bien</th>
-            <th width="6%">Marca</th>
-            <th width="6%">Estado</th>
-        </tr>
-    </thead>
-    <tbody>';
+<thead>
+<tr>
+    <th width="3%">#</th>
+    <th width="10%">Fecha</th>
+    <th width="12%">Origen</th>
+    <th width="12%">Destino</th>
+    <th width="12%">Responsable</th>
+    <th width="14%">Descripción</th>
+    <th width="10%">Cod. Patrimonial</th>
+    <th width="15%">Bien</th>
+    <th width="6%">Marca</th>
+    <th width="6%">Estado</th>
+</tr>
+</thead>
+<tbody>
+';
 
-// LLENADO DE FILAS
 $contador = 1;
+$total_bienes = 0;
+
 foreach ($data->data as $mov) {
     foreach ($mov->detalle as $bien) {
         $html .= '<tr>';
@@ -121,12 +122,17 @@ foreach ($data->data as $mov) {
         $html .= '<td width="6%">' . htmlspecialchars($bien->estado_conservacion) . '</td>';
         $html .= '</tr>';
         $contador++;
+        $total_bienes++;
     }
 }
 
 $html .= '</tbody></table>';
 
-// ESCRIBIR HTML EN EL PDF
+// RESUMEN GENERAL ALINEADO A LA IZQUIERDA
+$html .= "<br><br><p style='text-align:left;font-size:9pt;'><strong>Resumen general:</strong></p>";
+$html .= "<p style='text-align:left;font-size:9pt;'>Total de bienes movidos: <strong>$total_bienes</strong></p>";
+
+// ESCRIBIR EN EL PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 ob_clean();
 $pdf->Output("reporte-movimientos-bienes.pdf", "I");

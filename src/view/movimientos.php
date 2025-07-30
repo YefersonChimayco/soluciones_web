@@ -62,9 +62,9 @@
             <div class="card-body">
 
                 <!-- Botones de acción -->
-                <div class="d-flex justify-content-end gap-2 mb-2">
+                <div class="flex justify-content-end gap-2 mb-2">
                     <a href="<?php echo BASE_URL; ?>imprimir-movimientos-todos" target="_blank" class="btn btn-danger">
-                        <i class="fa fa-print"></i> Imprimir
+                        <i class="fa fa-print"></i>
                     </a>
                 </div>
 

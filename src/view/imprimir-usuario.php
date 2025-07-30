@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
-// CONSULTA A LA API
+// CONSULTA API
 $curl = curl_init();
 curl_setopt_array($curl, array(
     CURLOPT_URL => BASE_URL_SERVER . "src/control/Usuario.php?tipo=listar_todos_usuarios&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'],
@@ -17,89 +17,75 @@ $err = curl_error($curl);
 curl_close($curl);
 
 if ($err) {
-    echo "Error cURL: $err";
-    exit;
+    die("Error cURL: $err");
 }
 
 $json_start = strpos($response, '{');
-if ($json_start !== false) {
-    $clean_response = substr($response, $json_start);
-} else {
-    echo "No se encontró JSON válido en la respuesta";
-    exit;
-}
-
+$clean_response = $json_start !== false ? substr($response, $json_start) : die("No se encontró JSON válido.");
 $data = json_decode($clean_response);
 
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo "Error al decodificar JSON: " . json_last_error_msg();
-    exit;
+if (json_last_error() !== JSON_ERROR_NONE || !$data || !$data->status) {
+    die("Error en la respuesta: " . ($data->msg ?? json_last_error_msg()));
 }
 
-if (!$data || !isset($data->status) || !$data->status) {
-    echo "No se encontraron usuarios o error en la respuesta.";
-    if ($data && isset($data->msg)) {
-        echo " Mensaje: " . $data->msg;
-    }
-    exit;
-}
-
-// FECHA
+// FECHA ACTUAL
 $meses = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
 $fecha = new DateTime();
 $dia = $fecha->format('d');
 $mes = $meses[(int)$fecha->format('m')];
 $anio = $fecha->format('Y');
 
-// TCPDF PERSONALIZADO
-class MYPDF extends TCPDF {
+// CLASE PDF PERSONALIZADA
+class CustomPDF extends TCPDF {
     public function Header() {
         $logo_izq = 'https://oportunidadeslaborales.uladech.edu.pe/wp-content/uploads/2021/09/GOBIERNO-REGIONAL-DE-AYACUCHO.jpg';
         $logo_der = 'https://gra.regionayacucho.gob.pe/_next/image?url=%2Flogos%2Fdrea.png&w=640&q=75';
+
         $html = '
-        <table style="width:100%;border-bottom:2px solid #333;">
+        <table style="width:100%; border-bottom: 2px solid #1c4587;">
             <tr>
-                <td width="15%" align="center"><img src="' . $logo_izq . '" width="60"/></td>
-                <td width="70%" align="center">
-                    <div style="font-size:10px;"><strong>GOBIERNO REGIONAL DE AYACUCHO</strong></div>
-                    <div style="font-size:12px;"><strong>DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO</strong></div>
-                    <div style="font-size:8px;">DIRECCIÓN DE ADMINISTRACIÓN</div>
+                <td width="15%" align="center"><img src="' . $logo_izq . '" width="50"/></td>
+                <td width="70%" align="center" style="font-size:11px; color:#1c4587;">
+                    <strong>GOBIERNO REGIONAL DE AYACUCHO</strong><br/>
+                    <strong>DIRECCIÓN REGIONAL DE EDUCACIÓN</strong><br/>
+                    <span style="font-size:9px;">Dirección de Administración</span>
                 </td>
-                <td width="15%" align="center"><img src="' . $logo_der . '" width="60"/></td>
+                <td width="15%" align="center"><img src="' . $logo_der . '" width="50"/></td>
             </tr>
         </table>';
         $this->writeHTML($html, true, false, true, false, '');
     }
 }
 
-$pdf = new MYPDF();
-$pdf->SetMargins(10, 40, 10);
-$pdf->SetHeaderMargin(5);
-$pdf->SetAutoPageBreak(true, 15);
-$pdf->SetFont('helvetica', '', 8);
+// INSTANCIAR PDF
+$pdf = new CustomPDF();
+$pdf->SetMargins(12, 40, 12);
+$pdf->SetHeaderMargin(10);
+$pdf->SetAutoPageBreak(true, 20);
+$pdf->SetFont('helvetica', '', 9);
 $pdf->AddPage('P');
 
 // TÍTULO
 $html = "
-<h2 style='text-align:center;font-size:13pt;'>LISTADO DE USUARIOS DEL SISTEMA</h2>
-<p style='text-align:right;font-size:9pt;'>Ayacucho, $dia de $mes del $anio</p>";
+<h3 style='text-align:center; color:#1c4587;'>REPORTE GENERAL DE USUARIOS</h3>
+<p style='text-align:right;'>Ayacucho, $dia de $mes del $anio</p>";
 
+// ESTILOS Y TABLA
 $html .= '
 <style>
 th {
-    background-color: #e6f0fa;
+    background-color: #d9e1f2;
+    color: #1c4587;
     font-weight: bold;
-    border: 1px solid #ccc;
+    border: 1px solid #a4bed4;
+    font-size: 8pt;
     text-align: center;
-    vertical-align: middle;
-    font-size: 7pt;
-    padding: 3px;
+    padding: 4px;
 }
 td {
-    border: 1px solid #ddd;
-    font-size: 7pt;
-    padding: 3px;
-    vertical-align: middle;
+    border: 1px solid #d0d7de;
+    font-size: 8pt;
+    padding: 4px;
     text-align: center;
 }
 td.left {
@@ -110,53 +96,54 @@ td.left {
 <table cellspacing="0" cellpadding="2">
     <thead>
         <tr>
-            <th width="8%">#</th>
-            <th width="15%">DNI</th>
-            <th width="35%">Nombres y Apellidos</th>
-            <th width="27%">Correo Electrónico</th>
+            <th width="10%">N°</th>
+            <th width="20%">DNI</th>
+            <th width="30%">Nombres y Apellidos</th>
+            <th width="25%">Correo Electrónico</th>
             <th width="15%">Estado</th>
         </tr>
     </thead>
     <tbody>';
 
-// LLENADO
+// LISTADO DE USUARIOS
 $contador = 1;
-$usuarios_activos = 0;
-$usuarios_inactivos = 0;
+$activos = 0;
+$inactivos = 0;
 
 foreach ($data->data as $usuario) {
-    if ($usuario->estado == '1') {
-        $estado_texto = '<span style="color:green;"><strong>ACTIVO</strong></span>';
-        $usuarios_activos++;
-    } elseif ($usuario->estado == '0') {
-        $estado_texto = '<span style="color:red;"><strong>INACTIVO</strong></span>';
-        $usuarios_inactivos++;
-    } else {
-        $estado_texto = '<span style="color:gray;">N/D</span>';
-    }
+    $estado = match ($usuario->estado) {
+        '1' => '<span style="color:green;">Activo</span>',
+        '0' => '<span style="color:red;">Inactivo</span>',
+        default => '<span style="color:gray;">N/D</span>'
+    };
 
-    $html .= '<tr>';
-    $html .= '<td width="8%">' . $contador . '</td>';
-    $html .= '<td width="15%">' . htmlspecialchars($usuario->dni ?: 'S/DNI') . '</td>';
-    $html .= '<td width="35%" class="left">' . htmlspecialchars($usuario->nombres_apellidos ?: 'Sin nombre') . '</td>';
-    $html .= '<td width="27%" class="left">' . htmlspecialchars($usuario->correo ?: 'Sin correo') . '</td>';
-    $html .= '<td width="15%">' . $estado_texto . '</td>';
-    $html .= '</tr>';
-    $contador++;
+    if ($usuario->estado == '1') $activos++;
+    if ($usuario->estado == '0') $inactivos++;
+
+    $html .= '<tr>
+        <td width="10%">' . $contador++ . '</td>
+        <td width="20%">' . htmlspecialchars($usuario->dni ?: 'S/DNI') . '</td>
+        <td width="30%" class="left">' . htmlspecialchars($usuario->nombres_apellidos ?: 'Sin nombre') . '</td>
+        <td width="25%" class="left">' . htmlspecialchars($usuario->correo ?: 'Sin correo') . '</td>
+        <td width="15%">' . $estado . '</td>
+    </tr>';
 }
 
 $html .= '</tbody></table>';
 
-// RESUMEN FINAL
-$total_usuarios = count($data->data);
-$html .= "<br><br><table style='width:100%; font-size:8pt;'>
-    <tr><td align='right'><strong>Total de Usuarios:</strong> $total_usuarios</td></tr>
-    <tr><td align='right' style='color:green;'><strong>Usuarios Activos:</strong> $usuarios_activos</td></tr>
-    <tr><td align='right' style='color:red;'><strong>Usuarios Inactivos:</strong> $usuarios_inactivos</td></tr>
-</table>";
+// RESUMEN (alineado a la izquierda)
+$total = count($data->data);
+$html .= "
+<br><br>
+<div style='font-size:8.5pt; text-align:left;'>
+    <strong>Resumen General:</strong><br><br>
+    Total de Usuarios: <strong>$total</strong><br>
+    Usuarios Activos: <strong style='color:green;'>$activos</strong><br>
+    Usuarios Inactivos: <strong style='color:red;'>$inactivos</strong><br>
+</div>";
 
-// MOSTRAR PDF
+// GENERAR PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 ob_clean();
-$pdf->Output("listado-usuarios-sistema.pdf", "I");
+$pdf->Output("reporte_usuarios_formal.pdf", "I");
 ?>

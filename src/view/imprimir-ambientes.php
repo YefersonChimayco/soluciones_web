@@ -1,6 +1,9 @@
 <?php
-
 require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // CONSULTA A LA API
 $curl = curl_init();
@@ -14,35 +17,17 @@ $response = curl_exec($curl);
 $err = curl_error($curl);
 curl_close($curl);
 
-if ($err) {
-    echo "Error cURL: $err";
-    exit;
-}
+if ($err) die("Error cURL: $err");
 
 $json_start = strpos($response, '{');
-if ($json_start !== false) {
-    $clean_response = substr($response, $json_start);
-} else {
-    echo "No se encontró JSON válido en la respuesta";
-    exit;
-}
-
+$clean_response = $json_start !== false ? substr($response, $json_start) : die("No se encontró JSON válido.");
 $data = json_decode($clean_response);
 
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo "Error al decodificar JSON: " . json_last_error_msg();
-    exit;
+if (json_last_error() !== JSON_ERROR_NONE || !$data || !$data->status) {
+    die("Error: " . ($data->msg ?? json_last_error_msg()));
 }
 
-if (!$data || !isset($data->status) || !$data->status) {
-    echo "No se encontraron ambientes o error en la respuesta.";
-    if ($data && isset($data->msg)) {
-        echo " Mensaje: " . $data->msg;
-    }
-    exit;
-}
-
-// FECHA ACTUAL
+// FECHA
 $meses = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
 $fecha = new DateTime();
 $dia = $fecha->format('d');
@@ -55,17 +40,17 @@ class MYPDF extends TCPDF {
         $logo_izq = 'https://oportunidadeslaborales.uladech.edu.pe/wp-content/uploads/2021/09/GOBIERNO-REGIONAL-DE-AYACUCHO.jpg';
         $logo_der = 'https://gra.regionayacucho.gob.pe/_next/image?url=%2Flogos%2Fdrea.png&w=640&q=75';
         $html = '
-        <table style="width:100%;border-bottom:1px solid #666;">
+        <table style="width:100%; border-bottom:2px solid #1c4587;">
             <tr>
                 <td width="15%" align="center"><img src="' . $logo_izq . '" width="50"/></td>
-                <td width="70%" align="center">
-                    <div style="font-size:11px;font-weight:bold;">GOBIERNO REGIONAL DE AYACUCHO</div>
-                    <div style="font-size:13px;font-weight:bold;">DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO</div>
-                    <div style="font-size:9px;">Dirección de Administración</div>
+                <td width="70%" align="center" style="color:#1c4587;">
+                    <div style="font-size:10pt;"><strong>GOBIERNO REGIONAL DE AYACUCHO</strong></div>
+                    <div style="font-size:11pt;"><strong>DIRECCIÓN REGIONAL DE EDUCACIÓN</strong></div>
+                    <div style="font-size:9pt;">Dirección de Administración</div>
                 </td>
                 <td width="15%" align="center"><img src="' . $logo_der . '" width="50"/></td>
             </tr>
-        </table><br>';
+        </table>';
         $this->writeHTML($html, true, false, true, false, '');
     }
 }
@@ -79,29 +64,27 @@ $pdf->AddPage('P');
 
 // TÍTULO Y FECHA
 $html = "
-<h2 style='text-align:center;font-size:14pt;'>LISTADO DE AMBIENTES</h2>
-<p style='text-align:right;font-size:9pt;'>Ayacucho, $dia de $mes del $anio</p>
-";
+<h3 style='text-align:center;color:#1c4587;'>LISTADO DE AMBIENTES EDUCATIVOS</h3>
+<p style='text-align:right;'>Ayacucho, $dia de $mes del $anio</p>";
 
-// ESTILOS + TABLA CON WIDTH EN `<td>`
+// ESTILOS Y TABLA
 $html .= '
 <style>
 th {
-    background-color: #e6f0fa;
-    color: #000;
+    background-color: #d9e1f2;
+    color: #1c4587;
     font-weight: bold;
-    border: 1px solid #ccc;
-    font-size: 8.5pt;
+    border: 1px solid #a4bed4;
+    font-size: 8pt;
     padding: 4px;
     text-align: center;
 }
 td {
-    border: 1px solid #ddd;
+    border: 1px solid #d0d7de;
     font-size: 8pt;
-    padding: 3px;
-    vertical-align: middle;
+    padding: 4px;
 }
-td.left-align {
+td.left {
     text-align: left;
 }
 td.center {
@@ -109,39 +92,41 @@ td.center {
 }
 </style>
 
-<table cellspacing="0" cellpadding="3" width="100%">
+<table cellspacing="0" cellpadding="2">
     <thead>
         <tr>
-            <th width="6%">N°</th>
-            <th width="34%">Institución Educativa</th>
+            <th width="8%">N°</th>
+            <th width="42%">Institución Educativa</th>
             <th width="14%">Código</th>
-            <th width="46%">Detalle del Ambiente</th>
+            <th width="36%">Detalle del Ambiente</th>
         </tr>
     </thead>
     <tbody>';
 
-// LLENAR FILAS
+// LLENADO DE FILAS
 $contador = 1;
 foreach ($data->data as $ambiente) {
     $html .= '<tr>';
-    $html .= '<td width="6%" class="center">' . $contador . '</td>';
-    $html .= '<td width="34%"  class="left-align">' . htmlspecialchars($ambiente->institucion_nombre ?: 'Sin institución') . '</td>';
-    $html .= '<td width="14%" class="center">' . ($ambiente->codigo ?: 'S/C') . '</td>';
-    $html .= '<td width="46%" class="left-align">' . htmlspecialchars($ambiente->detalle ?: 'Sin detalle') . '</td>';
+    $html .= '<td width="8%" class="center">' . $contador++ . '</td>';
+    $html .= '<td width="42%" class="left">' . htmlspecialchars($ambiente->institucion_nombre ?: 'Sin institución') . '</td>';
+    $html .= '<td width="14%" class="center">' . htmlspecialchars($ambiente->codigo ?: 'S/C') . '</td>';
+    $html .= '<td width="36%" class="left">' . htmlspecialchars($ambiente->detalle ?: 'Sin detalle') . '</td>';
     $html .= '</tr>';
-    $contador++;
 }
 
-$html .= '
-    </tbody>
-</table>';
+$html .= '</tbody></table>';
 
-// RESUMEN FINAL
-$total_ambientes = count($data->data);
-$html .= "<br><p style='text-align:right;font-size:9pt;'><strong>Total de Ambientes: $total_ambientes</strong></p>";
+// RESUMEN FINAL A LA IZQUIERDA
+$total = count($data->data);
+$html .= "
+<br><br>
+<div style='font-size:8.5pt; text-align:left;'>
+    <strong>Resumen:</strong><br><br>
+    Total de Ambientes Registrados: <strong>$total</strong><br>
+</div>";
 
-// ESCRIBIR AL PDF
+// SALIDA FINAL
 $pdf->writeHTML($html, true, false, true, false, '');
 ob_clean();
-$pdf->Output("listado-ambientes-educativos.pdf", "I");
+$pdf->Output("reporte_ambientes_educativos.pdf", "I");
 ?>
