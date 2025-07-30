@@ -164,433 +164,164 @@ function cargar_sede_filtro(sedes) {
     });
     document.getElementById('busqueda_tabla_sede').innerHTML = lista_sede;
 }
-async function validar_datos_reset_password() {
+
+// ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
+
+async function validar_datos_reset_password(){
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
-
+    
+    // Verificar que los datos existan
+    if (!id || !token) {
+        console.log("ID o token faltantes");
+        mostrarLinkInvalido();
+        return;
+    }
+       
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
-    formData.append('sesion', '');
-
+    formData.append('sesion','');
+    
     try {
-        let respuesta = await fetch(base_url + 'src/control/Usuario.php?tipo=validar_datos_reset_password', {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=validar_datos_reset_password', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: formData
         });
+        
+        // Verificar si la respuesta es válida
+        if (!respuesta.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        
         let json = await respuesta.json();
-        if (json.status==false) {
+        console.log("Respuesta del servidor:", json); // Para debugging
+        
+        // Verificar diferentes posibles valores de status
+        if (json.status === false || json.status === "false" || json.status == false) {
+            console.log("Link inválido o expirado");
+            
+            // Mostrar alerta
             Swal.fire({
-                type: 'error',
+                icon: 'error', // Cambiar 'type' por 'icon' (versión más nueva de SweetAlert)
                 title: 'Error de Link',
-                text: "Link  Caducada, Por favor verifique su correo",
+                text: "Link Caducado, verifique su correo",
                 confirmButtonClass: 'btn btn-confirm mt-2',
                 footer: '',
-                timer: 3000
+                timer: 3000,
+                timerProgressBar: true
             });
-            let formulario = document.getElementById('logincontainer');
-            formulario.innerHTML=`<style>
-            :root {
-                --color-primary: #ff6b35;
-                --color-secondary: #ffa726;
-                --color-accent: #ff8f00;
-                --color-text-secondary: #4a4a4a;
-                --color-button-bg: #ef4444;
-                --color-button-text: #ffffff;
-                --border-radius: 16px;
-                --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
-                --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffa726 50%, #ff8f00 100%);
-            }
-
-            .card {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                border-radius: 24px;
-                padding: 3rem 2.5rem;
-                box-shadow: 0 25px 50px rgba(255, 107, 53, 0.3);
-                text-align: center;
-                max-width: 600px;
-                width: 100%;
-                position: relative;
-                overflow: hidden;
-                animation: slideUp 0.8s var(--transition-timing);
-                margin: 0 auto;
-            }
-
-            .card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 5px;
-                background: var(--gradient-primary);
-                border-radius: 24px 24px 0 0;
-            }
-
-            @keyframes slideUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(50px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            h1 {
-                font-size: 3rem;
-                font-weight: 800;
-                margin: 0 0 1.5rem 0;
-                background: var(--gradient-primary);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                line-height: 1.1;
-                user-select: text;
-                animation: textGlow 2s ease-in-out infinite alternate;
-            }
-
-            @keyframes textGlow {
-                from { filter: brightness(1); }
-                to { filter: brightness(1.1); }
-            }
-
-            p {
-                font-size: 1.25rem;
-                line-height: 1.6;
-                margin: 0 0 2.5rem 0;
-                color: var(--color-text-secondary);
-                max-width: 450px;
-                margin-left: auto;
-                margin-right: auto;
-                user-select: text;
-            }
-
-            p strong {
-                color: var(--color-accent);
-                font-weight: 700;
-            }
-
-            .icon-container {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 2rem;
-                position: relative;
-            }
-
-            .animated-icon {
-                width: 120px;
-                height: 120px;
-                background: linear-gradient(135deg, #ffb74d 0%, #ffa726 100%);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
-                animation: pulse 2s ease-in-out infinite;
-                position: relative;
-                font-size: 3.5rem;
-                color: white;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            }
-
-            .animated-icon::after {
-                content: '';
-                position: absolute;
-                width: 140px;
-                height: 140px;
-                border: 3px solid rgba(255, 107, 53, 0.3);
-                border-radius: 50%;
-                animation: ripple 2s ease-out infinite;
-            }
-
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
-
-            @keyframes ripple {
-                0% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(1.3);
-                    opacity: 0;
-                }
-            }
-
-            .motivational-elements {
-                display: flex;
-                gap: 2rem;
-                justify-content: center;
-                width: 100%;
-                max-width: 500px;
-                margin: 0 auto 2.5rem auto;
-                user-select: none;
-            }
-
-            .motivational-card {
-                flex: 1;
-                background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-                border-radius: var(--border-radius);
-                padding: 1.5rem;
-                box-shadow: 0 8px 24px rgba(255, 152, 0, 0.15);
-                transition: all 0.4s var(--transition-timing);
-                cursor: default;
-                border: 2px solid transparent;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .motivational-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-                transition: left 0.8s;
-            }
-
-            .motivational-card:hover::before {
-                left: 100%;
-            }
-
-            .motivational-card:hover {
-                transform: translateY(-8px) scale(1.02);
-                box-shadow: 0 20px 40px rgba(255, 152, 0, 0.25);
-                border-color: var(--color-accent);
-            }
-
-            .card-icon {
-                font-size: 2.5rem;
-                margin-bottom: 0.5rem;
-                display: block;
-                animation: bounce 2s ease-in-out infinite;
-            }
-
-            .card-text {
-                font-size: 0.95rem;
-                font-weight: 600;
-                color: #e65100;
-                line-height: 1.4;
-            }
-
-            @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-10px); }
-            }
-
-            button {
-                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-                color: var(--color-button-text);
-                border: none;
-                border-radius: var(--border-radius);
-                padding: 1rem 2.5rem;
-                font-weight: 700;
-                font-size: 1.125rem;
-                cursor: pointer;
-                transition: all 0.3s var(--transition-timing);
-                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-                user-select: none;
-                position: relative;
-                overflow: hidden;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            button::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition: left 0.5s;
-            }
-
-            button:hover::before {
-                left: 100%;
-            }
-
-            button:hover,
-            button:focus {
-                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-                outline: none;
-                transform: translateY(-3px) scale(1.02);
-                box-shadow: 0 15px 35px rgba(220, 38, 38, 0.5);
-            }
-
-            button:active {
-                transform: translateY(-1px) scale(0.98);
-                box-shadow: 0 8px 20px rgba(220, 38, 38, 0.7);
-            }
-
-            .additional-info {
-                margin-top: 2rem;
-                padding: 1.5rem;
-                background: rgba(255, 183, 77, 0.1);
-                border: 1px solid rgba(255, 183, 77, 0.3);
-                border-radius: var(--border-radius);
-                color: var(--color-text-secondary);
-                font-size: 0.95rem;
-                line-height: 1.5;
-            }
-
-            .additional-info strong {
-                color: var(--color-accent);
-            }
-
-            /* Responsive */
-            @media (max-width: 520px) {
-                .card {
-                    padding: 2rem 1.5rem 2.5rem;
-                    margin: 0.5rem;
-                }
-                
-                h1 {
-                    font-size: 2.25rem;
-                }
-                
-                p {
-                    max-width: 100%;
-                    font-size: 1.1rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .animated-icon {
-                    width: 100px;
-                    height: 100px;
-                    font-size: 2.5rem;
-                }
-                
-                .motivational-elements {
-                    gap: 1rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .motivational-card {
-                    padding: 1rem;
-                }
-                
-                .card-icon {
-                    font-size: 2rem;
-                }
-                
-                .card-text {
-                    font-size: 0.85rem;
-                }
-                
-                button {
-                    font-size: 1rem;
-                    padding: 0.85rem 2rem;
-                }
-                
-                .additional-info {
-                    padding: 1rem;
-                    font-size: 0.9rem;
-                }
-            }
-
-            @media (max-width: 400px) {
-                h1 {
-                    font-size: 2rem;
-                }
-                
-                .motivational-elements {
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 1rem;
-                }
-                
-                .motivational-card {
-                    max-width: 250px;
-                }
-            }
-        </style>
-
-        <main class="card" role="main" aria-labelledby="error-title" aria-describedby="error-desc">
-            <div class="icon-container">
-                <div class="animated-icon" aria-hidden="true">💫</div>
-            </div>
             
-            <h1 id="error-title">¡Oops! No pudimos recuperar tu contraseña</h1>
-            <p id="error-desc">Pero no te preocupes, todo tiene solución. <strong>¡Mantén una actitud positiva!</strong></p>
+            // Modificar el formulario
+            mostrarLinkInvalido();
             
-            <section class="motivational-elements" aria-label="Elementos motivacionales">
-                <div class="motivational-card" tabindex="0">
-                    <span class="card-icon">🌟</span>
-                    <div class="card-text">Los errores son oportunidades para aprender</div>
-                </div>
-                <div class="motivational-card" tabindex="0">
-                    <span class="card-icon">🚀</span>
-                    <div class="card-text">Cada reinicio es un nuevo comienzo</div>
-                </div>
-            </section>
-            
-            <button type="button" onclick="location.reload()" aria-label="Reintentar recuperación de contraseña">
-                🔄 Intentar de nuevo
-            </button>
-            
-            <div class="additional-info">
-                <strong>💡 Consejo:</strong> Los enlaces de recuperación de contraseña expiran por seguridad. Si necesitas ayuda adicional, contacta al administrador del sistema.
-            </div>
-        </main>
-   `;
+        } else if (json.status === true || json.status === "true" || json.status == true) {
+            console.log("Link válido - permitir cambio de contraseña");
+            // El formulario se mantiene visible para que el usuario pueda cambiar la contraseña
+        } else {
+            console.log("Respuesta inesperada:", json);
+            mostrarLinkInvalido();
         }
-        //console.log(respuesta);
-
+        
     } catch (e) {
-        console.log("Error al cargar categorias" + e);
-
+        console.log("Error al validar datos: " + e);
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: "No se pudo validar el enlace",
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 2000
+        });
+        
+        // En caso de error, también mostrar link inválido
+        mostrarLinkInvalido();
     }
 }
 
+// Función separada para manejar link inválido
+function mostrarLinkInvalido() {
+    let formulario = document.getElementById('frm_reset_password');
+    if (formulario) {
+        formulario.innerHTML = `<p style="color: red; text-align: center; font-weight: bold; margin: 20px 0;">Link inválido o expirado</p>`;
+    }
+    
+    // Redirigir después de un tiempo
+    setTimeout(() => {
+        console.log("Redirigiendo al login...");
+        window.location.replace(base_url + "login");
+    }, 3000);
+}
+
+// Función mejorada para validar inputs
 function validar_imputs_password(){
     let pass1 = document.getElementById('password').value;
     let pass2 = document.getElementById('password1').value;
-
-    if (pass1 !==pass2) {
+    
+    if (pass1 !== pass2) {
         Swal.fire({
-                type: 'error',
-                title: 'contraseñas no coinciden',
-                text: "error",
-                footer: '',
-                timer: 1000
-            });
-            return;
+            icon: 'error',
+            title: 'Error',
+            text: "Las contraseñas no coinciden",
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 1500
+        });
+        return;
     }
-    if (pass1.length<=8 && pass2.length<8) {
+    
+    if (pass1.length < 8 || pass2.length < 8) {
         Swal.fire({
-                type: 'error',
-                title: 'error',
-                text: "contraseña debe tener minimo 8 caracteres",
-                footer: '',
-                timer: 3000
-            });
-            return;
-    } else {
-        actualizar_password();
+            icon: 'error',
+            title: 'Error',
+            text: "La contraseña debe tener mínimo 8 caracteres",
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 1500
+        });
+        return;
     }
+    
+    if (pass1.trim() === '' || pass2.trim() === '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Por favor complete todos los campos",
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 1500
+        });
+        return;
+    }
+    
+    // Si todas las validaciones pasan, proceder a actualizar
+    actualizar_password();
 }
 
-async function actualizar_password() {
-    const id = document.getElementById('data').value;
-    const token = document.getElementById('data2').value;
-    const password = document.getElementById('password').value;
+// Función mejorada para actualizar contraseña
+async function actualizar_password(){
+    let id = document.getElementById('data').value;
+    let token = document.getElementById('data2').value;
+    let nueva_password = document.getElementById('password').value;
+    
+    // Mostrar loading
+    Swal.fire({
+        title: 'Actualizando...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
     
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
-    formData.append('password', password);
+    formData.append('password', nueva_password);
     formData.append('sesion', '');
     
     try {
@@ -602,37 +333,53 @@ async function actualizar_password() {
         });
         
         let json = await respuesta.json();
+        console.log("Respuesta actualizar:", json); // Para debugging
         
-        if (json.status) {
-            await Swal.fire({
-                type: 'success',
-                title: '¡Contraseña actualizada!',
-                text: 'Tu contraseña ha sido actualizada correctamente. Serás redirigido al login.',
+        if (json.status == true || json.status === "true") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: json.msg,
                 confirmButtonClass: 'btn btn-confirm mt-2',
-                timer: 3000,
+                footer: '',
+                timer: 2000,
                 timerProgressBar: true
+            }).then(() => {
+                // Redirigir al login después de actualizar exitosamente
+                console.log("Redirigiendo al login después de actualizar...");
+                window.location.href = base_url + "login";
             });
-            
-            // Redirigir al login después de 2 segundos
-            setTimeout(() => {
-                location.replace(base_url + "login");
-            }, 2000);
-            
         } else {
-            throw new Error(json.mensaje || 'Error al actualizar la contraseña');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: json.msg || 'Error desconocido',
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 2000
+            });
         }
-        
-    } catch (error) {
-        console.log("Error al actualizar contraseña: " + error);
-        throw error;
+    } catch (e) {
+        console.log("Error al actualizar contraseña: " + e);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: "No se pudo actualizar la contraseña. Intente nuevamente.",
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 2000
+        });
     }
 }
 
-    //enviar informacin de password y id al controlador   usuario
-    //recibir informacion y encriptar la nueva contraseña
-    //guardar en la base  de datos y actualizar campo reset password =0 y token paswword=''
-    //notificar a usuario sobre el estado del proceso
-    
 
+     //TAREA ENVIAR INFORMACION DE PASSWORD Y ID AL CONTROLADOR USUARIO
+ // RESIVIR INFORMACION Y ENCRIPTAR LA NUEVA CONTRASEÑA 
+ // GUARDAR EN BASE DE DAROS Y ACTUALIZAR CAMPO DE RESET_PASSWORD = 0 Y TOKEN_PASSWORD = ''
+ // NOTIFICAR A USUARIO SOBRE EL ESTADO DEL PROCESO CON ALERTA
 
-// ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
+        
+   //enviar informacion de password y id al controlador usuario
+    // en el controlador recibir informacion y encriptar la nueva contraseña
+    // guardar en base de datos y actualizar campo de reset_password= 0 y token_password= 'vacio'
+    // notificar a usuario sobre el estado del proceso con alertas

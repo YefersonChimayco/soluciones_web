@@ -36,6 +36,7 @@ async function iniciar_sesion() {
                 mode: 'cors',
                 cache: 'no-cache',
                 body: formData
+                
             });
             location.replace(base_url);
             location.replace(base_url);
@@ -70,24 +71,22 @@ async function cerrar_sesion() {
     }
 }
 
-async function sent_email_password() {
-    // generamos el formulario
+async function send_email_password() {
 
     const datos = new FormData();
     datos.append('sesion', session_session);
     datos.append('token', token_token);
     try {
-        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=sent_email_password', {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=send_email_password ', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
-            body: datos 
+            body: datos
         });
         
-        //console.log(json);
     } catch (e) {
         console.log("Error al actualizar periodo" + e);
     }
 
-
+    
 }
