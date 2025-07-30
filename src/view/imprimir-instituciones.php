@@ -7,7 +7,7 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 // CONSULTA A LA API
 $curl = curl_init();
 curl_setopt_array($curl, array(
-    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listar_todos_bienes&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'] . "&ies=1",
+    CURLOPT_URL => BASE_URL_SERVER . "src/control/Institucion.php?tipo=listar_todas_instituciones&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'],
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_CUSTOMREQUEST => "GET"
@@ -30,21 +30,20 @@ if ($json_start !== false) {
 }
 
 $data = json_decode($clean_response);
-
 if (json_last_error() !== JSON_ERROR_NONE) {
     echo "Error al decodificar JSON: " . json_last_error_msg();
     exit;
 }
 
 if (!$data || !isset($data->status) || !$data->status) {
-    echo "No se encontraron bienes o error en la respuesta.";
+    echo "No se encontraron instituciones o error en la respuesta.";
     if ($data && isset($data->msg)) {
         echo " Mensaje: " . $data->msg;
     }
     exit;
 }
 
-// FECHA
+// FECHA ACTUAL
 $meses = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
 $fecha = new DateTime();
 $dia = $fecha->format('d');
@@ -77,11 +76,11 @@ $pdf->SetMargins(10, 40, 10);
 $pdf->SetHeaderMargin(5);
 $pdf->SetAutoPageBreak(true, 15);
 $pdf->SetFont('helvetica', '', 8);
-$pdf->AddPage('L');
+$pdf->AddPage('P');
 
-// TÍTULO
+// TÍTULO Y FECHA
 $html = "
-<h2 style='text-align:center;font-size:13pt;'>INVENTARIO GENERAL DE BIENES</h2>
+<h2 style='text-align:center;font-size:13pt;'>LISTADO DE INSTITUCIONES</h2>
 <p style='text-align:right;font-size:9pt;'>Ayacucho, $dia de $mes del $anio</p>";
 
 // ESTILOS MODERNOS
@@ -111,48 +110,36 @@ td.left {
 <table cellspacing="0" cellpadding="2">
     <thead>
         <tr>
-            <th width="3%">#</th>
-            <th width="8%">Código Patrimonial</th>
-            <th width="15%">Denominación</th>
-            <th width="8%">Marca</th>
-            <th width="8%">Modelo</th>
-            <th width="8%">Tipo</th>
-            <th width="6%">Color</th>
-            <th width="8%">Serie</th>
-            <th width="8%">Dimensiones</th>
-            <th width="6%">Valor</th>
-            <th width="6%">Situación</th>
-            <th width="8%">Estado</th>
-            <th width="8%">Ambiente</th>
+            <th width="8%">#</th>
+            <th width="18%">Código Modular</th>
+            <th width="22%">RUC</th>
+            <th width="40%">Nombre de la Institución</th>
+            <th width="12%">Beneficiario</th>
         </tr>
     </thead>
     <tbody>';
 
-// LLENADO
+// FILAS
 $contador = 1;
-foreach ($data->data as $bien) {
+foreach ($data->data as $institucion) {
     $html .= '<tr>';
-    $html .= '<td width="3%">' . $contador . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->cod_patrimonial ?: 'S/C') . '</td>';
-    $html .= '<td width="15%" class="left">' . htmlspecialchars($bien->denominacion) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->marca) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->modelo) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->tipo) . '</td>';
-    $html .= '<td width="6%">' . htmlspecialchars($bien->color) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->serie) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->dimensiones) . '</td>';
-    $html .= '<td width="6%">S/. ' . number_format($bien->valor, 2) . '</td>';
-    $html .= '<td width="6%">' . htmlspecialchars($bien->situacion) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->estado_conservacion) . '</td>';
-    $html .= '<td width="8%" class="left">' . htmlspecialchars($bien->ambiente_codigo . ' - ' . $bien->ambiente_detalle) . '</td>';
+    $html .= '<td width="8%">' . $contador . '</td>';
+    $html .= '<td width="18%">' . ($institucion->cod_modular ?: 'S/C') . '</td>';
+    $html .= '<td width="22%">' . ($institucion->ruc ?: 'S/RUC') . '</td>';
+    $html .= '<td width="40%" class="left">' . htmlspecialchars($institucion->nombre) . '</td>';
+    $html .= '<td width="12%">' . (isset($institucion->nombres_apellidos) ? htmlspecialchars($institucion->nombres_apellidos) : 'N/A') . '</td>';
     $html .= '</tr>';
     $contador++;
 }
 
 $html .= '</tbody></table>';
 
-// GENERAR PDF
+// TOTAL
+$total_instituciones = count($data->data);
+$html .= "<br><p style='text-align:right;font-size:9pt;'><strong>Total de Instituciones: $total_instituciones</strong></p>";
+
+// SALIDA
 $pdf->writeHTML($html, true, false, true, false, '');
 ob_clean();
-$pdf->Output("inventario-bienes-general.pdf", "I");
+$pdf->Output("listado-instituciones.pdf", "I");
 ?>

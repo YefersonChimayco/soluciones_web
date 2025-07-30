@@ -38,8 +38,8 @@
                     </div>
                     <div class="form-group mb-0 justify-content-end row text-center">
                         <div class="col-12">
-                            <a href="<?php echo BASE_URL;?>usuarios" class="btn btn-light">Regresar</a>
-                            <button type="button" class="btn btn-success" onclick="registrar_usuario();">Registrar</button>
+                            <a href="<?php echo BASE_URL;?>usuarios" class="btn btn-light waves-effect waves-light">Regresar</a>
+                            <button type="button" class="btn btn-success waves-effect waves-light" onclick="registrar_usuario();">Registrar</button>
                         </div>
                     </div>
                 </form>
@@ -48,6 +48,4 @@
     </div>
 </div>
 <script src="<?php echo BASE_URL; ?>src/view/js/functions_usuario.js"></script>
-
-
 <!-- end page title -->

@@ -15,8 +15,8 @@ $objAmbiente = new AmbienteModel();
 $objAdmin = new AdminModel();
 
 //variables de sesion
-$id_sesion = $_REQUEST['sesion'];
-$token = $_REQUEST['token'];
+$id_sesion = $_POST['sesion'];
+$token = $_POST['token'];
 
 if ($tipo == "buscar_bien_movimiento") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
@@ -227,13 +227,30 @@ if ($tipo == "datos_registro") {
     }
     echo json_encode($arr_Respuesta);
 }
-if ($tipo == "listarBienes") {
-        $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
-    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)){
-        $arr_Bienes = $objBien->listarBienes();
-        $arr_Respuesta['bienes'] = $arr_Bienes;
-        $arr_Respuesta['status'] = true;
-        $arr_Respuesta['msg'] = 'correcto';
-    } 
+if ($tipo == "listar_todos_bienes") {
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+    
+    // Para este endpoint, obtener parámetros de GET en lugar de POST
+    $id_sesion = isset($_GET['sesion']) ? $_GET['sesion'] : '';
+    $token = isset($_GET['token']) ? $_GET['token'] : '';
+    
+    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $ies = isset($_GET['ies']) ? $_GET['ies'] : 1;
+        
+        $arr_Bienes = $objBien->listar_todos_bienes($ies);
+        
+        if (!empty($arr_Bienes)) {
+            $arr_Respuesta = array(
+                'status' => true, 
+                'data' => $arr_Bienes,
+                'msg' => 'Bienes encontrados'
+            );
+        } else {
+            $arr_Respuesta = array(
+                'status' => false, 
+                'msg' => 'No se encontraron bienes'
+            );
+        }
+    }
     echo json_encode($arr_Respuesta);
 }

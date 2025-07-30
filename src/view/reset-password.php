@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Recuperar Contraseña</title>
   <style>
     body {
       margin: 0;
@@ -13,7 +14,7 @@
       align-items: center;
       min-height: 100vh;
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg,rgb(226, 69, 69), #88d3ce);
+      background: linear-gradient(135deg, #6e45e2, #88d3ce);
       color: #fff;
     }
 
@@ -41,9 +42,9 @@
       border-radius: 5px;
       outline: none;
       font-size: 1rem;
+      box-sizing: border-box;
     }
 
-    .login-container input[type="email"],
     .login-container input[type="password"] {
       background: rgba(255, 255, 255, 0.8);
       color: #333;
@@ -57,17 +58,22 @@
       width: 100%;
       padding: 10px;
       margin-top: 20px;
-      background:rgb(238, 110, 59);
+      background: #6e45e2;
       border: none;
       border-radius: 5px;
       color: #fff;
       font-size: 1rem;
       cursor: pointer;
-      transition:background 0.3s ease;
+      transition: background 0.3s ease;
     }
 
     .login-container button:hover {
       background: #88d3ce;
+    }
+
+    .login-container button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
     }
 
     .login-container a {
@@ -91,26 +97,26 @@
 </head>
 
 <body>
-    <input type="hidden" id="data" value='<?php echo $_GET['data'];?>'>
-    <input type="hidden" id="data2" value='<?php echo urldecode($_GET['data2']);?>'>
-  <div class="login-container" id="logincontainer">
-    <h1>recuperar contraseña </h1>
+    <input type="hidden" id="data" value="<?php echo $_GET['data']; ?>"/>
+    <input type="hidden" id="data2" value="<?php echo urldecode($_GET['data2']); ?>" />
+  <div class="login-container">
+    <h1>RECUPERAR CONTRASEÑA</h1>
     <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%">
     <h4>Sistema de Control de Inventario</h4>
     <form id="frm_reset_password">
-      <input type="password" name="password" id="password" placeholder=" nueva Contraseña" required>
-      <input type="password" name="password" id="password1" placeholder=" confirmar Contraseña" required>
-      <button type="button" onclick="validar_imputs_password();" >actualizar contraseña</button>
+      <!-- CORREGIDO: Cambiar type="text" a type="password" -->
+      <input type="password" name="password" id="password" placeholder="Nueva Contraseña" required>
+      <input type="password" name="password1" id="password1" placeholder="Confirmar Contraseña" required>
+      <button type="button" onclick="validar_imputs_password();" id="btn_actualizar">Actualizar Contraseña</button>
     </form>
   </div>
 </body>
+
 <script src="<?php echo BASE_URL; ?>src/view/js/principal.js"></script>
 <script>
-validar_datos_reset_password();
-
+    validar_datos_reset_password();
 </script>
 
 <!-- Sweet Alerts Js-->
 <script src="<?php echo BASE_URL ?>src/view/pp/plugins/sweetalert2/sweetalert2.min.js"></script>
-
 </html>

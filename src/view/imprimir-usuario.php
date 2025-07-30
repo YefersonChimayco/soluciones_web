@@ -7,7 +7,7 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 // CONSULTA A LA API
 $curl = curl_init();
 curl_setopt_array($curl, array(
-    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listar_todos_bienes&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'] . "&ies=1",
+    CURLOPT_URL => BASE_URL_SERVER . "src/control/Usuario.php?tipo=listar_todos_usuarios&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'],
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_CUSTOMREQUEST => "GET"
@@ -37,7 +37,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 }
 
 if (!$data || !isset($data->status) || !$data->status) {
-    echo "No se encontraron bienes o error en la respuesta.";
+    echo "No se encontraron usuarios o error en la respuesta.";
     if ($data && isset($data->msg)) {
         echo " Mensaje: " . $data->msg;
     }
@@ -77,14 +77,13 @@ $pdf->SetMargins(10, 40, 10);
 $pdf->SetHeaderMargin(5);
 $pdf->SetAutoPageBreak(true, 15);
 $pdf->SetFont('helvetica', '', 8);
-$pdf->AddPage('L');
+$pdf->AddPage('P');
 
 // TÍTULO
 $html = "
-<h2 style='text-align:center;font-size:13pt;'>INVENTARIO GENERAL DE BIENES</h2>
+<h2 style='text-align:center;font-size:13pt;'>LISTADO DE USUARIOS DEL SISTEMA</h2>
 <p style='text-align:right;font-size:9pt;'>Ayacucho, $dia de $mes del $anio</p>";
 
-// ESTILOS MODERNOS
 $html .= '
 <style>
 th {
@@ -111,48 +110,53 @@ td.left {
 <table cellspacing="0" cellpadding="2">
     <thead>
         <tr>
-            <th width="3%">#</th>
-            <th width="8%">Código Patrimonial</th>
-            <th width="15%">Denominación</th>
-            <th width="8%">Marca</th>
-            <th width="8%">Modelo</th>
-            <th width="8%">Tipo</th>
-            <th width="6%">Color</th>
-            <th width="8%">Serie</th>
-            <th width="8%">Dimensiones</th>
-            <th width="6%">Valor</th>
-            <th width="6%">Situación</th>
-            <th width="8%">Estado</th>
-            <th width="8%">Ambiente</th>
+            <th width="8%">#</th>
+            <th width="15%">DNI</th>
+            <th width="35%">Nombres y Apellidos</th>
+            <th width="27%">Correo Electrónico</th>
+            <th width="15%">Estado</th>
         </tr>
     </thead>
     <tbody>';
 
 // LLENADO
 $contador = 1;
-foreach ($data->data as $bien) {
+$usuarios_activos = 0;
+$usuarios_inactivos = 0;
+
+foreach ($data->data as $usuario) {
+    if ($usuario->estado == '1') {
+        $estado_texto = '<span style="color:green;"><strong>ACTIVO</strong></span>';
+        $usuarios_activos++;
+    } elseif ($usuario->estado == '0') {
+        $estado_texto = '<span style="color:red;"><strong>INACTIVO</strong></span>';
+        $usuarios_inactivos++;
+    } else {
+        $estado_texto = '<span style="color:gray;">N/D</span>';
+    }
+
     $html .= '<tr>';
-    $html .= '<td width="3%">' . $contador . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->cod_patrimonial ?: 'S/C') . '</td>';
-    $html .= '<td width="15%" class="left">' . htmlspecialchars($bien->denominacion) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->marca) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->modelo) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->tipo) . '</td>';
-    $html .= '<td width="6%">' . htmlspecialchars($bien->color) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->serie) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->dimensiones) . '</td>';
-    $html .= '<td width="6%">S/. ' . number_format($bien->valor, 2) . '</td>';
-    $html .= '<td width="6%">' . htmlspecialchars($bien->situacion) . '</td>';
-    $html .= '<td width="8%">' . htmlspecialchars($bien->estado_conservacion) . '</td>';
-    $html .= '<td width="8%" class="left">' . htmlspecialchars($bien->ambiente_codigo . ' - ' . $bien->ambiente_detalle) . '</td>';
+    $html .= '<td width="8%">' . $contador . '</td>';
+    $html .= '<td width="15%">' . htmlspecialchars($usuario->dni ?: 'S/DNI') . '</td>';
+    $html .= '<td width="35%" class="left">' . htmlspecialchars($usuario->nombres_apellidos ?: 'Sin nombre') . '</td>';
+    $html .= '<td width="27%" class="left">' . htmlspecialchars($usuario->correo ?: 'Sin correo') . '</td>';
+    $html .= '<td width="15%">' . $estado_texto . '</td>';
     $html .= '</tr>';
     $contador++;
 }
 
 $html .= '</tbody></table>';
 
-// GENERAR PDF
+// RESUMEN FINAL
+$total_usuarios = count($data->data);
+$html .= "<br><br><table style='width:100%; font-size:8pt;'>
+    <tr><td align='right'><strong>Total de Usuarios:</strong> $total_usuarios</td></tr>
+    <tr><td align='right' style='color:green;'><strong>Usuarios Activos:</strong> $usuarios_activos</td></tr>
+    <tr><td align='right' style='color:red;'><strong>Usuarios Inactivos:</strong> $usuarios_inactivos</td></tr>
+</table>";
+
+// MOSTRAR PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 ob_clean();
-$pdf->Output("inventario-bienes-general.pdf", "I");
+$pdf->Output("listado-usuarios-sistema.pdf", "I");
 ?>

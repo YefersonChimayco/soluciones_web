@@ -158,54 +158,64 @@ function generarfilastabla(item) {
     document.querySelector('#contenido_tabla').appendChild(nueva_fila);
 
 }
-async function registrar_usuario() {
-    let dni = document.getElementById('dni').value.trim();
-    let apellidos_nombres = document.getElementById('apellidos_nombres').value.trim();
-    let correo = document.getElementById('correo').value.trim();
-    let telefono = document.getElementById('telefono').value.trim();
-    let password = document.getElementById('password').value;
 
-    if (dni === "" || apellidos_nombres === "" || correo === "" || telefono === "" || password === "") {
+async function registrar_usuario() {
+    let dni = document.getElementById('dni').value;
+    let apellidos_nombres = document.querySelector('#apellidos_nombres').value;
+    let correo = document.querySelector('#correo').value;
+    let telefono = document.querySelector('#telefono').value;
+    let password = document.querySelector('#password').value;
+    if (dni == "" || apellidos_nombres == "" || correo == "" || telefono == "" || password == "") {
         Swal.fire({
-            icon: 'error',
+            type: 'error',
             title: 'Error',
-            text: 'Todos los campos son obligatorios'
-        });
+            text: 'Campos vacíos...',
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: ''
+        })
         return;
     }
-
     try {
-        const datos = new FormData(document.getElementById("frmRegistrar"));
+        
+        const datos = new FormData(frmRegistrar);
         datos.append('sesion', session_session);
         datos.append('token', token_token);
-
-        let response = await fetch(base_url_server + 'src/control/Usuario.php?tipo=registrar', {
+        //enviar datos hacia el controlador
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=registrar', {
             method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
             body: datos
         });
-
-        const json = await response.json();
-
+        json = await respuesta.json();
         if (json.status) {
             document.getElementById("frmRegistrar").reset();
             Swal.fire({
-                icon: 'success',
-                title: 'Registro Exitoso',
+                type: 'success',
+                title: 'Registro',
                 text: json.mensaje,
-                timer: 1500
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 1000
             });
+
+        } else if (json.msg == "Error_Sesion") {
+            alerta_sesion();
         } else {
             Swal.fire({
-                icon: 'error',
+                type: 'error',
                 title: 'Error',
-                text: json.mensaje
-            });
+                text: json.mensaje,
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 1000
+            })
         }
-    } catch (error) {
-        console.error("Error: ", error);
+        //console.log(json);
+    } catch (e) {
+        console.log("Oops, ocurrio un error " + e);
     }
 }
-
 
 
 async function actualizarUsuario(id) {

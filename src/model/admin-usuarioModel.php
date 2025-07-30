@@ -10,18 +10,18 @@ class UsuarioModel
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    public function registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password)
-{
-    $stmt = $this->conexion->prepare("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono, password) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $dni, $apellidos_nombres, $correo, $telefono, $password);
     
-    if ($stmt->execute()) {
-        return $this->conexion->insert_id;
-    } else {
-        return 0;
+    public function registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password)
+    {
+        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptacion de contraseña mediante hash
+        $sql = $this->conexion->query("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono, password) VALUES ('$dni','$apellidos_nombres','$correo','$telefono', '$password_secure')");
+        if ($sql) {
+            $sql = $this->conexion->insert_id;
+        } else {
+            $sql = 0;
+        }
+        return $sql;
     }
-}
-
     public function actualizarUsuario($id, $dni, $nombres_apellidos, $correo, $telefono, $estado)
     {
         $sql = $this->conexion->query("UPDATE usuarios SET dni='$dni',nombres_apellidos='$nombres_apellidos',correo='$correo',telefono='$telefono',estado ='$estado' WHERE id='$id'");
@@ -29,14 +29,24 @@ class UsuarioModel
     }
     public function actualizarPassword($id, $password)
     {
-        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password' WHERE id='$id'");
+        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptar nueva contraseña
+        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password_secure' WHERE id='$id'");
         return $sql;
     }
-
-    public function updateResetPassword($id, $token, $estado){
+    
+    // Método para actualizar contraseña y resetear los campos de recuperación
+    public function actualizarPasswordYResetearToken($id, $password)
+    {
+        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptar nueva contraseña
+        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password_secure', reset_password='0', token_password='' WHERE id='$id'");
+        return $sql;
+    }
+    
+    public function updateResetPassword($id,$token,$estado){
         $sql = $this->conexion->query("UPDATE usuarios SET token_password ='$token', reset_password='$estado' WHERE id='$id'");
         return $sql;
     }
+
     public function buscarUsuarioById($id)
     {
         $sql = $this->conexion->query("SELECT * FROM usuarios WHERE id='$id'");
@@ -44,20 +54,11 @@ class UsuarioModel
         return $sql;
     }
     public function buscarUsuarioByDni($dni)
-{
-    $stmt = $this->conexion->prepare("SELECT * FROM usuarios WHERE dni = ?");
-    $stmt->bind_param("s", $dni);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-
-    if ($resultado->num_rows > 0) {
-        return $resultado->fetch_object(); // 👈 devuelve objeto
-    } else {
-        return null;
+    {
+        $sql = $this->conexion->query("SELECT * FROM usuarios WHERE dni='$dni'");
+        $sql = $sql->fetch_object();
+        return $sql;
     }
-}
-
-    
     public function buscarUsuarioByNomAp($nomap)
     {
         $sql = $this->conexion->query("SELECT * FROM usuarios WHERE nombres_apellidos='$nomap'");
@@ -117,7 +118,16 @@ class UsuarioModel
         }
         return $arrRespuesta;
     }
+    // Agregar este método a la clase UsuarioModel
 
-
+public function listarTodosLosUsuarios()
+{
+    $arrRespuesta = array();
+    $sql = $this->conexion->query("SELECT * FROM usuarios ORDER BY nombres_apellidos ASC");
+    while ($objeto = $sql->fetch_object()) {
+        array_push($arrRespuesta, $objeto);
+    }
+    return $arrRespuesta;
+}
 
 }

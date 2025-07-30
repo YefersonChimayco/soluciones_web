@@ -12,7 +12,7 @@ class vistasControlador extends vistaModelo
     {
 
         if (!isset($_SESSION['sesion_id'])) {
-          if (isset($_GET['views'])) {
+            if (isset($_GET['views'])) {
                 $ruta = explode("/", $_GET['views']);
                 if ($ruta[0]=="reset-password") {
                     $respuesta = "reset-password";
