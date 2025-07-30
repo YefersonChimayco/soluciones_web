@@ -41,9 +41,9 @@
             <div class="card-body">
 
                 <!-- Botón Imprimir -->
-                <div class="d-flex justify-content-end mb-2">
+                <div class="flex justify-content-end mb-2">
                     <a href="<?php echo BASE_URL; ?>imprimir-ambientes" target="_blank" class="btn btn-danger">
-                        <i class="fa fa-print"></i> Imprimir
+                        <i class="fa fa-print"></i> 
                     </a>
                 </div>
 
