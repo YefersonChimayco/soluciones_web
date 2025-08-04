@@ -10,11 +10,9 @@ class UsuarioModel
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    
-    public function registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password)
+    public function registrarUsuario($dni, $apellidos_nombres,$correo, $telefono)
     {
-        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptacion de contraseña mediante hash
-        $sql = $this->conexion->query("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono, password) VALUES ('$dni','$apellidos_nombres','$correo','$telefono', '$password_secure')");
+        $sql = $this->conexion->query("INSERT INTO usuarios (dni, nombres_apellidos, correo, telefono) VALUES ('$dni','$apellidos_nombres','$correo','$telefono')");
         if ($sql) {
             $sql = $this->conexion->insert_id;
         } else {
@@ -29,19 +27,9 @@ class UsuarioModel
     }
     public function actualizarPassword($id, $password)
     {
-        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptar nueva contraseña
-        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password_secure' WHERE id='$id'");
+        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password' WHERE id='$id'");
         return $sql;
     }
-    
-    // Método para actualizar contraseña y resetear los campos de recuperación
-    public function actualizarPasswordYResetearToken($id, $password)
-    {
-        $password_secure = password_hash($password, PASSWORD_DEFAULT); //Encriptar nueva contraseña
-        $sql = $this->conexion->query("UPDATE usuarios SET password ='$password_secure', reset_password='0', token_password='' WHERE id='$id'");
-        return $sql;
-    }
-    
     public function updateResetPassword($id,$token,$estado){
         $sql = $this->conexion->query("UPDATE usuarios SET token_password ='$token', reset_password='$estado' WHERE id='$id'");
         return $sql;
@@ -118,16 +106,7 @@ class UsuarioModel
         }
         return $arrRespuesta;
     }
-    // Agregar este método a la clase UsuarioModel
 
-public function listarTodosLosUsuarios()
-{
-    $arrRespuesta = array();
-    $sql = $this->conexion->query("SELECT * FROM usuarios ORDER BY nombres_apellidos ASC");
-    while ($objeto = $sql->fetch_object()) {
-        array_push($arrRespuesta, $objeto);
-    }
-    return $arrRespuesta;
-}
+
 
 }

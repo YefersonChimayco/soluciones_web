@@ -89,7 +89,8 @@ if ($tipo == "listar_movimientos_ordenados_tabla") {
                 $arr_contenido[$i]->fecha_registro = $arr_Ambiente[$i]->fecha_registro;
                 $arr_contenido[$i]->descripcion = $arr_Ambiente[$i]->descripcion;
                 $opciones = '<button type="button" title="Ver" class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target=".modal_ver' . $arr_Ambiente[$i]->id . '"><i class="fa fa-eye"></i></button>
-                <a href="'.BASE_URL. 'imprimir-movimiento/'.$arr_Ambiente[$i]->id.'" class="btn btn-success waves-effect waves-light "><i class="fa fa-print"></i ></a>';
+                <a href="'.BASE_URL.'imprimir-movimiento/'.$arr_Ambiente[$i]->id.'" class="btn btn-outline-info"><i class="fa fa-print"></i></a>
+                ';
                 $arr_contenido[$i]->options = $opciones;
             }
             $arr_Respuesta['total'] = count($busqueda_filtro);
@@ -206,74 +207,30 @@ if ($tipo == "datos_registro") {
     echo json_encode($arr_Respuesta);
 }
 
-
-// YA CREADO UN ARRAY EL OBJETO $RES_BIEN AGREGARLO AL ARRAYRESPUESTA
-
-if ($tipo=="buscar_movimento_id") {
-      $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+if ($tipo == "buscar_movimiento_id") {
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
-       $id_movimiento = $_REQUEST['data'];
-       $arrMovimiento = $objMovimiento->buscarMovimientoById($id_movimiento);
-       $arrAmbOrigen = $objAmbiente->BuscarAmbienteById($arrMovimiento->id_ambiente_origen);
-       $arrAmbDestino = $objAmbiente->BuscarAmbienteById($arrMovimiento->id_ambiente_destino);
-         $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento->id_usuario_registro);
-             $arrIes = $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
-              $arrDetalle =$objMovimiento->buscarDetalle_MovimientoByMovimiento($id_movimiento);
-            
-                      
-// tarea  agregar bienes con array_push y despues el $array_bienes mandes ala respuesta y que se vea en la vista o interfaz y que muestree todos los atributos del bien
-
-$array_bienes = array();
+        $id_movimiento = $_REQUEST['data'];
+        $arrMovimiento = $objMovimiento->buscarMovimientoById($id_movimiento);
+        $arrAmbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_origen);
+        $arrAmbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_destino);
+        $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento->id_usuario_registro);
+        $arrIes= $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
+        $arrDetalle = $objMovimiento->buscarDetalle_MovimientoByMovimiento($id_movimiento);
+        $array_bienes = array();
         foreach ($arrDetalle as $bien) {
             $id_bien = $bien->id_bien;
             $res_bien = $objBien->buscarBienById($id_bien);
-            // Validamos que se haya encontrado el bien
-                array_push($array_bienes, $res_bien);
-                    }
-                
-             $arr_Respuesta['movimiento'] = $arrMovimiento;
-               $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
-                 $arr_Respuesta['amb_destino'] = $arrAmbDestino;
-                 $arr_Respuesta['datos_usuario'] = $arrUsuario;
-                 $arr_Respuesta['datos_ies'] = $arrIes;
-                   $arr_Respuesta['detalle']= $array_bienes;
-                   $arr_Respuesta['status'] = true;
-                     $arr_Respuesta['msg'] = 'correcto';
-                   
-    }
-echo json_encode($arr_Respuesta);
-}
-if ($tipo == "listar_todos_movimientos") {
-    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
-    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
-        $id_ies = $_GET['ies'];
-        $arrMovimientos = $objMovimiento->buscarMovimiento_tabla_filtro("", "", "", "", $id_ies);
-        $dataFinal = [];
-
-        foreach ($arrMovimientos as $mov) {
-            $origen = $objAmbiente->buscarAmbienteById($mov->id_ambiente_origen);
-            $destino = $objAmbiente->buscarAmbienteById($mov->id_ambiente_destino);
-            $usuario = $objUsuario->buscarUsuarioById($mov->id_usuario_registro);
-            $detalle = $objMovimiento->buscarDetalle_MovimientoByMovimiento($mov->id);
-
-            $bienes = [];
-            foreach ($detalle as $item) {
-                $bien = $objBien->buscarBienById($item->id_bien);
-                $bienes[] = $bien;
-            }
-
-            $dataFinal[] = [
-                'movimiento' => $mov,
-                'origen' => $origen,
-                'destino' => $destino,
-                'usuario' => $usuario,
-                'detalle' => $bienes
-            ];
+            array_push($array_bienes, $res_bien);
         }
-
+        $arr_Respuesta['movimiento'] = $arrMovimiento;
+        $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
+        $arr_Respuesta['amb_destino'] = $arrAmbDestino;
+        $arr_Respuesta['datos_usuario'] = $arrUsuario;
+        $arr_Respuesta['datos_ies'] = $arrIes;
+        $arr_Respuesta['detalle'] = $array_bienes;
         $arr_Respuesta['status'] = true;
-        $arr_Respuesta['data'] = $dataFinal;
+        $arr_Respuesta['msg'] = 'correcto';
     }
-
     echo json_encode($arr_Respuesta);
 }

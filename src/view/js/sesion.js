@@ -15,7 +15,7 @@ async function iniciar_sesion() {
         // capturamos datos del formulario html
         const datos = new FormData(frm_login);
         //enviar datos hacia el controlador
-        let respuesta = await fetch(base_url_server +'src/control/Login.php?tipo=iniciar_sesion', {
+        let respuesta = await fetch(base_url_server + 'src/control/Login.php?tipo=iniciar_sesion', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -36,7 +36,6 @@ async function iniciar_sesion() {
                 mode: 'cors',
                 cache: 'no-cache',
                 body: formData
-                
             });
             location.replace(base_url);
             location.replace(base_url);
@@ -70,23 +69,18 @@ async function cerrar_sesion() {
         location.replace(base_url + "intranet");
     }
 }
-
-async function send_email_password() {
-
+async function sent_email_password() {
     const datos = new FormData();
     datos.append('sesion', session_session);
     datos.append('token', token_token);
     try {
-        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=send_email_password ', {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=sent_email_password', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: datos
         });
-        
-    } catch (e) {
-        console.log("Error al actualizar periodo" + e);
-    }
+    } catch (error) {
 
-    
+    }
 }

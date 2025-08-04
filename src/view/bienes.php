@@ -11,7 +11,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Filtros de Búsqueda</h4>
@@ -19,7 +18,8 @@
                     <div class="form-group row mb-3 col-6">
                         <label for="busqueda_tabla_ambiente" class="col-5 col-form-label">Ambiente:</label>
                         <div class="col-7">
-                            <select class="form-control" name="busqueda_tabla_ambiente" id="busqueda_tabla_ambiente"></select>
+                            <select class="form-control" name="busqueda_tabla_ambiente" id="busqueda_tabla_ambiente">
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row mb-3 col-6">
@@ -35,30 +35,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group mb-0 text-center">
-                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="numero_pagina(1);">
-                        <i class="fa fa-search"></i> Buscar
-                    </button>
+                <div class="form-group mb-0 text-center ">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="numero_pagina(1);"><i class="fa fa-search"></i> Buscar</button>
                 </div>
             </div>
         </div>
-
         <div class="card">
             <div class="card-body">
-
-                <!-- Botones de acción -->
-                <div class="flex justify-content-end gap-2 mb-2">
-                    <a href="<?php echo BASE_URL; ?>imprimir-bienes" target="_blank" class="btn btn-danger">
-                        <i class="fa fa-print"></i> 
-                    </a>
-                    <a href="<?php echo BASE_URL; ?>reporte-bienes" class="btn btn-success">
-                        <i class="fa fa-file-excel"></i> 
-                    </a>
-                </div>
-
+                <a href="<?= BASE_URL ?>reporte-bienes" class="btn btn-success"><i class="fa fa-file-excel"></i></a>
                 <h4 class="card-title">Resultados de Búsqueda</h4>
-
-                <div id="filtros_tabla_header" class="form-group row page-title-box d-flex align-items-center justify-content-between m-0 mb-1 p-0">
+                <div id="filtros_tabla_header" class="form-group  row page-title-box d-flex align-items-center justify-content-between m-0 mb-1 p-0">
                     <input type="hidden" id="pagina" value="1">
                     <input type="hidden" id="filtro_codigo" value="">
                     <input type="hidden" id="filtro_ambiente" value="">
@@ -74,23 +60,20 @@
                         <label for="cantidad_mostrar">registros</label>
                     </div>
                 </div>
-
                 <div id="tablas"></div>
-
-                <div id="filtros_tabla_footer" class="form-group row page-title-box d-flex align-items-center justify-content-between m-0 mb-1 p-0">
-                    <div id="texto_paginacion_tabla"></div>
+                <div id="filtros_tabla_footer" class="form-group  row page-title-box d-flex align-items-center justify-content-between m-0 mb-1 p-0">
+                    <div id="texto_paginacion_tabla">
+                    </div>
                     <div id="paginacion_tabla">
-                        <ul class="pagination justify-content-end" id="lista_paginacion_tabla"></ul>
+                        <ul class="pagination justify-content-end" id="lista_paginacion_tabla">
+                        </ul>
                     </div>
                 </div>
-
                 <div id="modals_editar"></div>
-
             </div>
         </div>
     </div>
 </div>
-
 <script src="<?php echo BASE_URL; ?>src/view/js/functions_bien.js"></script>
 <script>
     listar_BienesOrdenados();

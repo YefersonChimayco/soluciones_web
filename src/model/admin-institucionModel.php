@@ -20,16 +20,6 @@ class InstitucionModel
         }
         return $sql;
     }
-    
-    public function obtenerTodasLasInstituciones()
-    {
-        $sql = $this->conexion->query("SELECT id, beneficiario, cod_modular, ruc, nombre FROM institucion ORDER BY nombre ASC");
-        $arrRespuesta = array();
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arrRespuesta, $objeto);
-        }
-        return $arrRespuesta;
-    }
     public function actualizarInstitucion($id, $beneficiario, $cod_modular, $ruc, $nombre)
     {
         $sql = $this->conexion->query("UPDATE institucion SET beneficiario= '$beneficiario', cod_modular='$cod_modular',ruc='$ruc',nombre='$nombre' WHERE id='$id'");
@@ -88,20 +78,6 @@ class InstitucionModel
         return $arrRespuesta;
     }
 
-    // Método actualizado para incluir el nombre del beneficiario
-    public function listarTodasInstituciones()
-    {
-        $sql = $this->conexion->query("
-            SELECT i.*, u.nombres_apellidos 
-            FROM institucion i 
-            LEFT JOIN usuarios u ON i.beneficiario = u.id 
-            ORDER BY i.nombre ASC
-        ");
-        $arrRespuesta = array();
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arrRespuesta, $objeto);
-        }
-        return $arrRespuesta;
-    }
+
 
 }

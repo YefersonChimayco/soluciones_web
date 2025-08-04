@@ -9,11 +9,11 @@
     },
     "authors": [
         {
-            "name": "josue"
+            "name": "anibal yucra"
         }
     ],
     "require": {
-        "phpmailer/phpmailer": "^6.9",  
+        "phpmailer/phpmailer": "^6.9",
         "tecnickcom/tcpdf": "^6.9",
         "phpoffice/phpspreadsheet": "^4.2"
     }

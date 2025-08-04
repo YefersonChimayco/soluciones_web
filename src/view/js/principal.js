@@ -167,22 +167,13 @@ function cargar_sede_filtro(sedes) {
 
 // ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
 
-async function validar_datos_reset_password(){
+async function validar_datos_reset_password() {
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
-    
-    // Verificar que los datos existan
-    if (!id || !token) {
-        console.log("ID o token faltantes");
-        mostrarLinkInvalido();
-        return;
-    }
-       
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
-    formData.append('sesion','');
-    
+    formData.append('sesion', '');
     try {
         let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=validar_datos_reset_password', {
             method: 'POST',
@@ -190,140 +181,65 @@ async function validar_datos_reset_password(){
             cache: 'no-cache',
             body: formData
         });
-        
-        // Verificar si la respuesta es válida
-        if (!respuesta.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
-        
         let json = await respuesta.json();
-        console.log("Respuesta del servidor:", json); // Para debugging
-        
-        // Verificar diferentes posibles valores de status
-        if (json.status === false || json.status === "false" || json.status == false) {
-            console.log("Link inválido o expirado");
-            
-            // Mostrar alerta
+        if (json.status == false) {
             Swal.fire({
-                icon: 'error', // Cambiar 'type' por 'icon' (versión más nueva de SweetAlert)
+                type: 'error',
                 title: 'Error de Link',
-                text: "Link Caducado, verifique su correo",
+                text: "Link caducado, verifique su correo",
                 confirmButtonClass: 'btn btn-confirm mt-2',
                 footer: '',
-                timer: 3000,
-                timerProgressBar: true
+                timer: 1000
             });
-            
-            // Modificar el formulario
-            mostrarLinkInvalido();
-            
-        } else if (json.status === true || json.status === "true" || json.status == true) {
-            console.log("Link válido - permitir cambio de contraseña");
-            // El formulario se mantiene visible para que el usuario pueda cambiar la contraseña
-        } else {
-            console.log("Respuesta inesperada:", json);
-            mostrarLinkInvalido();
+            let formulario = document.getElementById('frm_reset_password');
+            formulario.innerHTML = `texto de prueba`;
+            //location.replace(base_url + "login");
         }
-        
     } catch (e) {
-        console.log("Error al validar datos: " + e);
-        
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de conexión',
-            text: "No se pudo validar el enlace",
-            confirmButtonClass: 'btn btn-confirm mt-2',
-            footer: '',
-            timer: 2000
-        });
-        
-        // En caso de error, también mostrar link inválido
-        mostrarLinkInvalido();
+        console.log("Error al validar datos" + e);
     }
 }
 
-// Función separada para manejar link inválido
-function mostrarLinkInvalido() {
-    let formulario = document.getElementById('frm_reset_password');
-    if (formulario) {
-        formulario.innerHTML = `<p style="color: red; text-align: center; font-weight: bold; margin: 20px 0;">Link inválido o expirado</p>`;
-    }
-    
-    // Redirigir después de un tiempo
-    setTimeout(() => {
-        console.log("Redirigiendo al login...");
-        window.location.replace(base_url + "login");
-    }, 3000);
-}
-
-// Función mejorada para validar inputs
-function validar_imputs_password(){
+function validar_imputs_password() {
     let pass1 = document.getElementById('password').value;
     let pass2 = document.getElementById('password1').value;
-    
     if (pass1 !== pass2) {
         Swal.fire({
-            icon: 'error',
+            type: 'error',
             title: 'Error',
-            text: "Las contraseñas no coinciden",
-            confirmButtonClass: 'btn btn-confirm mt-2',
+            text: "Contraseñas no coinciden",
             footer: '',
             timer: 1500
         });
         return;
     }
-    
-    if (pass1.length < 8 || pass2.length < 8) {
+    if (pass1.length < 8 && pass2.length < 8) {
         Swal.fire({
-            icon: 'error',
+            type: 'error',
             title: 'Error',
-            text: "La contraseña debe tener mínimo 8 caracteres",
-            confirmButtonClass: 'btn btn-confirm mt-2',
+            text: "La contraseña tiene que ser minimo 8 caracteres",
             footer: '',
             timer: 1500
         });
         return;
+    } else {
+        actualizar_password();
     }
-    
-    if (pass1.trim() === '' || pass2.trim() === '') {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: "Por favor complete todos los campos",
-            confirmButtonClass: 'btn btn-confirm mt-2',
-            footer: '',
-            timer: 1500
-        });
-        return;
-    }
-    
-    // Si todas las validaciones pasan, proceder a actualizar
-    actualizar_password();
 }
+async function actualizar_password() {
+    //enviar informacion de password y id al controlador usuario
+    // recibir informacion y encriptar la nueva contraseña
+    //guardar en base de datos y  actualizar campo de reset_password = 0 y token_password = ''
+    // notificar a usuario sobre el estado del proceso
 
-// Función mejorada para actualizar contraseña
-async function actualizar_password(){
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
-    let nueva_password = document.getElementById('password').value;
-    
-    // Mostrar loading
-    Swal.fire({
-        title: 'Actualizando...',
-        text: 'Por favor espere',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
+    let password = document.getElementById('password').value;
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
-    formData.append('password', nueva_password);
+    formData.append('password', password);
     formData.append('sesion', '');
-    
     try {
         let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=actualizar_password_reset', {
             method: 'POST',
@@ -331,55 +247,26 @@ async function actualizar_password(){
             cache: 'no-cache',
             body: formData
         });
-        
         let json = await respuesta.json();
-        console.log("Respuesta actualizar:", json); // Para debugging
-        
-        if (json.status == true || json.status === "true") {
+        if (json.status) {
             Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: json.msg,
-                confirmButtonClass: 'btn btn-confirm mt-2',
+                type: 'success',
+                title: 'Perfecto',
+                text: "La contraseña se actualizó correctamente",
                 footer: '',
-                timer: 2000,
-                timerProgressBar: true
-            }).then(() => {
-                // Redirigir al login después de actualizar exitosamente
-                console.log("Redirigiendo al login después de actualizar...");
-                window.location.href = base_url + "login";
+                timer: 1500
             });
-        } else {
+        }else{
             Swal.fire({
-                icon: 'error',
+                type: 'error',
                 title: 'Error',
-                text: json.msg || 'Error desconocido',
-                confirmButtonClass: 'btn btn-confirm mt-2',
+                text: "Ocurrió un error ac actualizar la contraseña",
                 footer: '',
-                timer: 2000
+                timer: 1500
             });
         }
     } catch (e) {
-        console.log("Error al actualizar contraseña: " + e);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de conexión',
-            text: "No se pudo actualizar la contraseña. Intente nuevamente.",
-            confirmButtonClass: 'btn btn-confirm mt-2',
-            footer: '',
-            timer: 2000
-        });
+        console.log("Error al validar datos" + e);
     }
 }
 
-
-     //TAREA ENVIAR INFORMACION DE PASSWORD Y ID AL CONTROLADOR USUARIO
- // RESIVIR INFORMACION Y ENCRIPTAR LA NUEVA CONTRASEÑA 
- // GUARDAR EN BASE DE DAROS Y ACTUALIZAR CAMPO DE RESET_PASSWORD = 0 Y TOKEN_PASSWORD = ''
- // NOTIFICAR A USUARIO SOBRE EL ESTADO DEL PROCESO CON ALERTA
-
-        
-   //enviar informacion de password y id al controlador usuario
-    // en el controlador recibir informacion y encriptar la nueva contraseña
-    // guardar en base de datos y actualizar campo de reset_password= 0 y token_password= 'vacio'
-    // notificar a usuario sobre el estado del proceso con alertas

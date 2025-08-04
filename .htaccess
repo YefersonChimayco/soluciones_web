@@ -1,5 +1,6 @@
-RewriteEngine ON
+RewriteEngine On
 Options All -Indexes
+
 # 1️ Regla ESPECÍFICA primero: conserva la query-string
 RewriteRule ^reset-password$ src/view/reset-password.php [L,QSA]
 
